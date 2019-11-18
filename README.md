@@ -35,9 +35,10 @@ Sets the options to be used globally.
 Opens the specified image in the lightbox.  
 The returned promise will resolve once the lightbox has finished opening, resolving to the lightbox element.
 
-#### `close(img?: HTMLElement): Promise<HTMLElement|null>` (core)
+#### `close(img?: HTMLElement): Promise<void>` (core)
 
-Closes the currently active lightbox. If `img` is given, only closes if the currently open image is equal to `img`.
+Closes the currently active lightbox. If `img` is given, only closes if the currently open image is equal to `img`.  
+The returned promise will resolve once the lightbox has finished closing.
 
 #### `update(img: HTMLElement, options?: ImageOptions): HTMLElement` (core)
 

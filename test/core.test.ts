@@ -41,4 +41,31 @@ describe("MediumLightboxCore", () => {
       return expect(createInstance().open($img)).resolves.toBeInstanceOf(HTMLElement);
     });
   });
+
+  describe("close()", () => {
+    it("closes the active lightbox", async () => {
+        const $img = document.createElement("img");
+        const inst = createInstance();
+        await inst.open($img);
+        await inst.close();
+        expect(inst.active).toBe(undefined);
+    });
+
+    it("closes when given active $img", async () => {
+        const $img = document.createElement("img");
+        const inst = createInstance();
+        await inst.open($img);
+        await inst.close($img);
+        expect(inst.active).toBe(undefined);
+    });
+
+    it("doesn't close when given inactive $img", async () => {
+        const $img = document.createElement("img");
+        const $img2 = document.createElement("img");
+        const inst = createInstance();
+        await inst.open($img);
+        await inst.close($img2);
+        expect(inst.active).not.toBe(undefined);
+    });
+  });
 })
