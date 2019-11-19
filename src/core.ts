@@ -34,7 +34,8 @@ export class MediumLightboxCore {
         const $lightbox = this.options.lightboxGenerator($copiedImg, opts || {});
         this.active = { $lightbox, $img };
 
-        // TODO: insert into body and animate
+        // TODO: animate
+        document.body.appendChild($lightbox);
         return $lightbox;
     }
 
