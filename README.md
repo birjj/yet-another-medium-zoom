@@ -1,4 +1,4 @@
-# medium-lightbox
+# Yet Another Medium Zoom
 
 Extensible and configurable Medium-inspired lightbox.
 

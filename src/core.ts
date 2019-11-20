@@ -1,5 +1,6 @@
-import { AlbumEntry, ImageOptions, GlobalOptions } from "./types";
+import { AlbumEntry, ImageOptions, GlobalOptions, Classes } from "./types";
 import { defaultLightboxGenerator, isValidImage, cloneImage } from "./dom";
+import "./style.css";
 
 export const DEFAULT_OPTS: GlobalOptions = {
     scrollAllowance: 40,
@@ -32,6 +33,7 @@ export class MediumLightboxCore {
 
         const $copiedImg = cloneImage($img);
         const $lightbox = this.options.lightboxGenerator($copiedImg, opts || {});
+        $lightbox.addEventListener("click", () => this.close());
         this.active = { $lightbox, $img };
 
         // TODO: animate
@@ -53,6 +55,22 @@ export class MediumLightboxCore {
         }
 
         this.active = undefined;
+    }
+
+    /** Binds an image (or multiple), such that clicking it will open it
+     * @param $imgs The image(s) to bind. If this is a string, it's used as a selector. */
+    bind($imgs: HTMLElement | HTMLElement[] | string, opts?: ImageOptions): void {
+        if (typeof $imgs === "string") {
+            $imgs = Array.from(document.querySelectorAll($imgs));
+        }
+        if (!($imgs instanceof Array)) {
+            $imgs = [$imgs];
+        }
+
+        $imgs.forEach($img => {
+            $img.addEventListener("click", () => this.open($img, opts));
+            $img.classList.add(Classes.ORIGINAL);
+        });
     }
 }
 

@@ -18,8 +18,9 @@ export interface AlbumEntry {
 };
 
 export enum Classes {
-    WRAPPER = "m-lightbox__wrapper",
-    IMG_WRAPPER = "m-lightbox__img-wrapper",
-    CAPTION = "m-lightbox__caption",
-    HIGHRES = "m-lightbox__highres",
+    WRAPPER = "yamz__wrapper",
+    IMG_WRAPPER = "yamz__img-wrapper",
+    CAPTION = "yamz__caption",
+    HIGHRES = "yamz__highres",
+    ORIGINAL = "yamz__original"
 }
