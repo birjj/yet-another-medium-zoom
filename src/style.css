@@ -29,10 +29,10 @@
     z-index: -1;
 
     background: rgba(0, 0, 0, 0.9);
-    animation: yamz-fade-in 0.3s ease-out;
+    animation: yamz-fade-in 0.2s ease-out;
 }
 .yamz__wrapper--closing::before {
-    animation: yamz-fade-out 0.3s ease-out;
+    animation: yamz-fade-out 0.2s ease-out;
 }
 @keyframes yamz-fade-in {
     0% {
