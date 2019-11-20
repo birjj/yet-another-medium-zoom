@@ -33,7 +33,7 @@ export class MediumLightboxCore {
         if (!isValidImage($img)) { throw new TypeError(`${$img} cannot be used as an image`); }
         if (this.active) { await this.close(); }
 
-        const options = Object.assign({}, DEFAULT_OPTS, opts || {});
+        const options = Object.assign({}, this.options, opts || {});
 
         const $copiedImg = cloneImage($img);
         $copiedImg.classList.add(Classes.IMG);

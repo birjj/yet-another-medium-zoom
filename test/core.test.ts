@@ -1,11 +1,19 @@
 /* global document */
 import { MediumLightboxCore, DEFAULT_OPTS } from "../src/core";
+const DEFAULTS = {
+    ...DEFAULT_OPTS,
+    duration: 0,
+};
 
-const createInstance = () => new MediumLightboxCore();
+const createInstance = () => {
+    const inst = new MediumLightboxCore();
+    inst.setOptions({ duration: 0 }); // so we don't have to use FLIP, which requires DOM simulation
+    return inst;
+};
 describe("MediumLightboxCore", () => {
   describe("getOptions", () => {
     it("gets the default options initially", () => {
-      expect(createInstance().getOptions()).toEqual(DEFAULT_OPTS);
+      expect(createInstance().getOptions()).toEqual(DEFAULTS);
     });
   });
 
@@ -27,7 +35,7 @@ describe("MediumLightboxCore", () => {
     it("sets options when given partial settings", () => {
       const inst = createInstance();
       inst.setOptions({ scrollAllowance: 10 });
-      expect(inst.getOptions()).toEqual({ ...DEFAULT_OPTS, scrollAllowance: 10 });
+      expect(inst.getOptions()).toEqual({ ...DEFAULTS, scrollAllowance: 10 });
     });
   });
 
@@ -64,7 +72,7 @@ describe("MediumLightboxCore", () => {
         const $img = document.createElement("img");
         const $img2 = document.createElement("img");
         const inst = createInstance();
-        await inst.open($img);
+        await inst.open($img, { duration: 0 });
         await inst.close($img2);
         expect(inst.active).not.toBe(undefined);
     });
