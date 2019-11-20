@@ -2,6 +2,7 @@ export interface GlobalOptions {
     scrollAllowance: number,
     zoomOptimistically: boolean,
     wrapAlbums: boolean,
+    duration: number,
     container?: HTMLElement,
     lightboxGenerator: ($img: HTMLElement, opts: ImageOptions) => HTMLElement,
 };
@@ -19,8 +20,11 @@ export interface AlbumEntry {
 
 export enum Classes {
     WRAPPER = "yamz__wrapper",
+    WRAPPER_CLOSING = "yamz__wrapper--closing",
     IMG_WRAPPER = "yamz__img-wrapper",
+    IMG = "yamz__img",
     CAPTION = "yamz__caption",
     HIGHRES = "yamz__highres",
-    ORIGINAL = "yamz__original"
+    ORIGINAL = "yamz__original",
+    ORIGINAL_OPEN = "yamz__original--open"
 }

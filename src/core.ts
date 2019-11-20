@@ -1,11 +1,13 @@
 import { AlbumEntry, ImageOptions, GlobalOptions, Classes } from "./types";
 import { defaultLightboxGenerator, isValidImage, cloneImage } from "./dom";
+import FLIPElement from "./flip";
 import "./style.css";
 
 export const DEFAULT_OPTS: GlobalOptions = {
     scrollAllowance: 40,
     zoomOptimistically: true,
     wrapAlbums: false,
+    duration: 400,
     container: undefined,
     lightboxGenerator: defaultLightboxGenerator,
 };
@@ -14,7 +16,7 @@ export class MediumLightboxCore {
     options: GlobalOptions = {
         ...DEFAULT_OPTS,
     };
-    active?: { $lightbox: HTMLElement, $img: HTMLElement } = undefined;
+    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLElement } = undefined;
 
     /** Set options used by every lightbox */
     setOptions(newOpts: Partial<GlobalOptions>) {
@@ -31,24 +33,43 @@ export class MediumLightboxCore {
         if (!isValidImage($img)) { throw new TypeError(`${$img} cannot be used as an image`); }
         if (this.active) { await this.close(); }
 
-        const $copiedImg = cloneImage($img);
-        const $lightbox = this.options.lightboxGenerator($copiedImg, opts || {});
-        $lightbox.addEventListener("click", () => this.close());
-        this.active = { $lightbox, $img };
+        const options = Object.assign({}, DEFAULT_OPTS, opts || {});
 
-        // TODO: animate
+        const $copiedImg = cloneImage($img);
+        $copiedImg.classList.add(Classes.IMG);
+        $copiedImg.classList.remove(Classes.ORIGINAL);
+        $img.classList.add(Classes.ORIGINAL_OPEN);
+        const $lightbox = this.options.lightboxGenerator($copiedImg, options);
+        $lightbox.addEventListener("click", () => this.close());
+        this.active = { $lightbox, $img, $copiedImg };
+
         document.body.appendChild($lightbox);
+        if (options.duration > 0) {
+            const flip = new FLIPElement($img);
+            await flip.first($img)
+                .last($copiedImg)
+                .invert($copiedImg)
+                .play();
+        }
+
         return $lightbox;
     }
 
     /** Close the currently active image. If img is given, only closes if that's the currently active img */
     async close($img?: HTMLElement): Promise<void> {
         if (!this.active) { return; }
-        if ($img && this.active.$img !== $img) {
-            return;
-        }
+        if ($img && this.active.$img !== $img) { return; }
+        if (!$img) { $img = this.active.$img; }
 
-        // TODO: await animation
+        this.active.$lightbox.classList.add(Classes.WRAPPER_CLOSING);
+        if (this.options.duration) {
+            const flip = new FLIPElement($img);
+            await flip.first(this.active.$copiedImg)
+                .last(this.active.$img)
+                .invert(this.active.$copiedImg)
+                .play();
+        }
+        this.active.$img.classList.remove(Classes.ORIGINAL_OPEN);
         const $parent = this.active.$lightbox.parentNode;
         if ($parent) {
             $parent.removeChild(this.active.$lightbox);

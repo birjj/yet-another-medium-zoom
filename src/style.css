@@ -1,6 +1,9 @@
 .yamz__original {
     cursor: zoom-in;
 }
+.yamz__original--open {
+    visibility: hidden;
+}
 
 .yamz__wrapper {
     position: fixed;
@@ -28,12 +31,23 @@
     background: rgba(0, 0, 0, 0.9);
     animation: yamz-fade-in 0.3s ease-out;
 }
+.yamz__wrapper--closing::before {
+    animation: yamz-fade-out 0.3s ease-out;
+}
 @keyframes yamz-fade-in {
     0% {
         opacity: 0;
     }
     100% {
         opacity: 1;
+    }
+}
+@keyframes yamz-fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
     }
 }
 
@@ -48,6 +62,8 @@
     max-width: 100%;
     max-height: 100%;
 
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    will-change: transform;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
     animation: yamz-shadow-in 0.4s;
 }

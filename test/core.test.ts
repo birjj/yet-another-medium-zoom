@@ -16,6 +16,7 @@ describe("MediumLightboxCore", () => {
         scrollAllowance: 10,
         zoomOptimistically: false,
         wrapAlbums: false,
+        duration: 400,
         container: undefined,
         lightboxGenerator: undefined,
       };
