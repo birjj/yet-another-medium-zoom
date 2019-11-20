@@ -141,7 +141,9 @@ function getTransform(from: Snapshot, to: Snapshot) {
         width: to.width / from.width,
         height: to.height / from.height
     };
-    const translation = `translate(${delta.left.toFixed(2)}px, ${delta.top.toFixed(2)}px)`;
+
+    const minScale = Math.min(delta.width, delta.height);
+    const translation = `translate(${(delta.left / minScale).toFixed(2)}px, ${(delta.top / minScale).toFixed(2)}px)`;
     const scaling = `scale(${delta.width.toFixed(3)}, ${delta.height.toFixed(3)})`;
-    return `${translation} ${scaling}`;
+    return `${scaling} ${translation}`;
 }
