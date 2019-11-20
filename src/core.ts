@@ -89,7 +89,11 @@ export class MediumLightboxCore {
         }
 
         $imgs.forEach($img => {
-            $img.addEventListener("click", () => this.open($img, opts));
+            const imgOpts = Object.assign({}, opts || {});
+            if (!imgOpts.highRes && $img.dataset.highres) {
+                imgOpts.highRes = $img.dataset.highres;
+            }
+            $img.addEventListener("click", () => this.open($img, imgOpts));
             $img.classList.add(Classes.ORIGINAL);
         });
     }

@@ -3633,6 +3633,16 @@ parcel-bundler@^1.12.4:
     v8-compile-cache "^2.0.0"
     ws "^5.1.1"
 
+"parcel-plugin-data-attrs@file:.\\parcel\\parcel-plugin-data-attrs\\":
+  version "1.0.0"
+  dependencies:
+    parcel-bundler "^1.12.4"
+
+"parcel-plugin-data-attrs@file:parcel/parcel-plugin-data-attrs":
+  version "1.0.0"
+  dependencies:
+    parcel-bundler "^1.12.4"
+
 parse-asn1@^5.0.0:
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/parse-asn1/-/parse-asn1-5.1.5.tgz#003271343da58dc94cace494faef3d2147ecea0e"
