@@ -143,7 +143,7 @@ function getTransform(from: Snapshot, to: Snapshot) {
     };
 
     const minScale = Math.min(delta.width, delta.height);
-    const translation = `translate(${(delta.left / minScale).toFixed(2)}px, ${(delta.top / minScale).toFixed(2)}px)`;
-    const scaling = `scale(${delta.width.toFixed(3)}, ${delta.height.toFixed(3)})`;
+    const translation = `translate(${(delta.left / minScale).toFixed(5)}px, ${(delta.top / minScale).toFixed(5)}px)`;
+    const scaling = `scale(${delta.width.toFixed(5)}, ${delta.height.toFixed(5)})`;
     return `${scaling} ${translation}`;
 }

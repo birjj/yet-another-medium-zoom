@@ -3,7 +3,6 @@ import { ImageOptions, Classes } from "./types";
 export function cloneImage($img: HTMLImageElement, newSrc?: string): HTMLImageElement;
 export function cloneImage($img: HTMLPictureElement): HTMLPictureElement;
 export function cloneImage($img: HTMLPictureElement, newSrc: string): HTMLImageElement;
-export function cloneImage($img: SVGSVGElement, newSrc?: string): SVGSVGElement;
 export function cloneImage($img: any, newSrc?: string) {
     if ($img instanceof HTMLImageElement) {
         const $newImg = $img.cloneNode() as HTMLImageElement;
@@ -23,12 +22,24 @@ export function cloneImage($img: any, newSrc?: string) {
             return $img.cloneNode(true) as HTMLPictureElement;
         }
     }
-    return $img.cloneNode(true) as SVGSVGElement;
 }
 
-export function isValidImage($elm: HTMLElement): boolean {
-    const types = [HTMLPictureElement, HTMLImageElement, SVGSVGElement];
+export function isValidImage($elm: HTMLElement): $elm is HTMLImageElement|HTMLPictureElement {
+    const types = [HTMLPictureElement, HTMLImageElement];
     return types.some(type => $elm instanceof type);
+}
+
+export function getSrcFromImage($elm: HTMLImageElement | HTMLPictureElement): string {
+    if ($elm instanceof HTMLImageElement) {
+        return $elm.currentSrc;
+    }
+    if ($elm instanceof HTMLPictureElement) {
+        const $img = $elm.querySelector("img");
+        if ($img) {
+            return $img.currentSrc;
+        }
+    }
+    return "";
 }
 
 export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) {
@@ -38,14 +49,6 @@ export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) 
     const $imgWrapper = document.createElement("div");
     $imgWrapper.classList.add(Classes.IMG_WRAPPER);
     $imgWrapper.appendChild($img);
-    // add high-res image if given
-    if (opts.highRes) {
-        const $highRes = opts.highRes instanceof HTMLElement
-            ? opts.highRes
-            : cloneImage($img, opts.highRes);
-        $highRes.classList.add(Classes.HIGHRES);
-        $imgWrapper.appendChild($highRes);
-    }
     $wrapper.appendChild($imgWrapper);
 
     // add caption if given

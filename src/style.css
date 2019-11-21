@@ -12,11 +12,6 @@
     width: 100vw;
     height: 100vh;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
     cursor: zoom-out;
 }
 .yamz__wrapper::before {
@@ -29,10 +24,10 @@
     z-index: -1;
 
     background: rgba(0, 0, 0, 0.9);
-    animation: yamz-fade-in 0.2s ease-out;
+    animation: yamz-fade-in 0.2s ease-out both;
 }
 .yamz__wrapper--closing::before {
-    animation: yamz-fade-out 0.2s ease-out;
+    animation: yamz-fade-out 0.2s ease-out both;
 }
 @keyframes yamz-fade-in {
     0% {
@@ -53,14 +48,18 @@
 
 .yamz__img-wrapper {
     margin: 32px;
-    max-width: calc(100% - 64px);
-    max-height: calc(100% - 64px);
+    width: calc(100% - 64px);
+    height: calc(100% - 64px);
     text-align: center;
+    display: flex;
+    align-items: center;
 }
 
-.yamz__img-wrapper img {
+.yamz__img-wrapper img,
+.yamz__img-wrapper picture {
     max-width: 100%;
     max-height: 100%;
+    margin: 0 auto;
 
     transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
     will-change: transform;

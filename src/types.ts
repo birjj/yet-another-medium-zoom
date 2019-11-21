@@ -9,7 +9,7 @@ export interface GlobalOptions {
 
 export interface ImageOptions extends Partial<GlobalOptions> {
     album?: AlbumEntry[],
-    highRes?: string | HTMLElement,
+    highRes?: string,
     caption?: string | HTMLElement,
 }
 

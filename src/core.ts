@@ -1,5 +1,5 @@
 import { AlbumEntry, ImageOptions, GlobalOptions, Classes } from "./types";
-import { defaultLightboxGenerator, isValidImage, cloneImage } from "./dom";
+import { defaultLightboxGenerator, isValidImage, getSrcFromImage, cloneImage } from "./dom";
 import FLIPElement from "./flip";
 import "./style.css";
 
@@ -35,10 +35,24 @@ export class MediumLightboxCore {
 
         const options = Object.assign({}, this.options, opts || {});
 
-        const $copiedImg = cloneImage($img);
+        let $copiedImg: HTMLPictureElement|HTMLImageElement;
+        // lots of the type checks below here aren't really needed, but are safeguards to make TypeScript happy
+        if (options.highRes) {
+            $copiedImg = cloneImage($img, getSrcFromImage($img));
+            const loader = new Image();
+            loader.addEventListener("load", () => {
+                if ($copiedImg instanceof HTMLImageElement && options.highRes) {
+                    $copiedImg.src = options.highRes;
+                }
+            });
+            loader.src = options.highRes;
+        } else {
+            $copiedImg = cloneImage($img);
+        }
         $copiedImg.classList.add(Classes.IMG);
         $copiedImg.classList.remove(Classes.ORIGINAL);
         $img.classList.add(Classes.ORIGINAL_OPEN);
+
         const $lightbox = this.options.lightboxGenerator($copiedImg, options);
         $lightbox.addEventListener("click", () => this.close());
         this.active = { $lightbox, $img, $copiedImg };
