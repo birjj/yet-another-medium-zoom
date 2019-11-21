@@ -16,7 +16,7 @@ export class MediumLightboxCore {
     options: GlobalOptions = {
         ...DEFAULT_OPTS,
     };
-    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLElement } = undefined;
+    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLElement, origSrc?: string } = undefined;
 
     /** Set options used by every lightbox */
     setOptions(newOpts: Partial<GlobalOptions>) {
@@ -36,9 +36,11 @@ export class MediumLightboxCore {
         const options = Object.assign({}, this.options, opts || {});
 
         let $copiedImg: HTMLPictureElement|HTMLImageElement;
+        let origSrc: string|undefined;
         // lots of the type checks below here aren't really needed, but are safeguards to make TypeScript happy
         if (options.highRes) {
-            $copiedImg = cloneImage($img, getSrcFromImage($img));
+            origSrc = getSrcFromImage($img);
+            $copiedImg = cloneImage($img, origSrc);
             const loader = new Image();
             loader.addEventListener("load", () => {
                 if ($copiedImg instanceof HTMLImageElement && options.highRes) {
@@ -55,10 +57,11 @@ export class MediumLightboxCore {
 
         const $lightbox = this.options.lightboxGenerator($copiedImg, options);
         $lightbox.addEventListener("click", () => this.close());
-        this.active = { $lightbox, $img, $copiedImg };
+        this.active = { $lightbox, $img, $copiedImg, origSrc };
 
         document.body.appendChild($lightbox);
         if (options.duration > 0) {
+            console.log("Animating", { $img, $copiedImg, $lightbox });
             const flip = new FLIPElement($img);
             await flip.first($img)
                 .last($copiedImg)
@@ -77,6 +80,9 @@ export class MediumLightboxCore {
 
         this.active.$lightbox.classList.add(Classes.WRAPPER_CLOSING);
         if (this.options.duration) {
+            if (this.active.origSrc && this.active.$copiedImg instanceof HTMLImageElement) {
+                this.active.$copiedImg.src = this.active.origSrc;
+            }
             const flip = new FLIPElement($img);
             await flip.first(this.active.$copiedImg)
                 .last(this.active.$img)
