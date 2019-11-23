@@ -63,8 +63,10 @@
 
     transition: transform cubic-bezier(0.2, 0, 0.2, 1);
     will-change: transform;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
     animation: yamz-shadow-in 0.4s;
+}
+.yamz__img-wrapper img {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 .yamz__img-wrapper > picture {
     width: 100%;

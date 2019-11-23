@@ -16,7 +16,7 @@ export class MediumLightboxCore {
     options: GlobalOptions = {
         ...DEFAULT_OPTS,
     };
-    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLElement, origSrc?: string } = undefined;
+    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLElement, origSrc?: string, options: ImageOptions } = undefined;
 
     /** Set options used by every lightbox */
     setOptions(newOpts: Partial<GlobalOptions>) {
@@ -57,14 +57,17 @@ export class MediumLightboxCore {
 
         const $lightbox = this.options.lightboxGenerator($copiedImg, options);
         $lightbox.addEventListener("click", () => this.close());
-        this.active = { $lightbox, $img, $copiedImg, origSrc };
+        this.active = { $lightbox, $img, $copiedImg, origSrc, options };
 
         document.body.appendChild($lightbox);
         if (options.duration > 0) {
+            const $animElm = this.active.$copiedImg instanceof HTMLPictureElement
+                ? this.active.$copiedImg.querySelector("img") || this.active.$copiedImg
+                : this.active.$copiedImg;
             const flip = new FLIPElement($img);
             await flip.first($img)
-                .last($copiedImg)
-                .invert($copiedImg)
+                .last($animElm)
+                .invert($animElm)
                 .play(options.duration);
         }
 
@@ -77,30 +80,36 @@ export class MediumLightboxCore {
         if ($img && this.active.$img !== $img) { return; }
         if (!$img) { $img = this.active.$img; }
 
+        const active = this.active; // we store this for later in case .active is updated while we're animating the close
+        const options = active.options;
         this.active.$lightbox.classList.add(Classes.WRAPPER_CLOSING);
-        if (this.options.duration) {
+        if (options.duration) {
             if (this.active.origSrc && this.active.$copiedImg instanceof HTMLImageElement) {
                 this.active.$copiedImg.src = this.active.origSrc;
             }
+            const $animElm = this.active.$copiedImg instanceof HTMLPictureElement
+                ? this.active.$copiedImg.querySelector("img") || this.active.$copiedImg
+                : this.active.$copiedImg;
             const flip = new FLIPElement($img);
-            await flip.first(this.active.$copiedImg)
+            await flip.first($animElm)
                 .last(this.active.$img)
-                .invert(this.active.$copiedImg)
-                .play(this.options.duration);
+                .invert($animElm)
+                .play(options.duration);
         }
-        this.active.$img.classList.remove(Classes.ORIGINAL_OPEN);
-        const $parent = this.active.$lightbox.parentNode;
+        active.$img.classList.remove(Classes.ORIGINAL_OPEN);
+        const $parent = active.$lightbox.parentNode;
         if ($parent) {
-            $parent.removeChild(this.active.$lightbox);
+            $parent.removeChild(active.$lightbox);
         }
 
-        this.active = undefined;
+        if (this.active === active) {
+            this.active = undefined;
+        }
     }
 
     /** Binds an image (or multiple), such that clicking it will open it
      * @param $imgs The image(s) to bind. If this is a string, it's used as a selector. */
     bind($imgs: HTMLElement | HTMLElement[] | string, opts?: ImageOptions): void {
-        this.setOptions(opts || {});
         if (typeof $imgs === "string") {
             $imgs = Array.from(document.querySelectorAll($imgs));
         }
