@@ -57,7 +57,7 @@ export default class FLIPElement {
         return this;
     }
 
-    play() {
+    play(duration = 300) {
         if (!this._target$Elm || !this._elmPos || !this._last) {
             throw new Error(".invert() must be called before .play()");
         }
@@ -66,7 +66,7 @@ export default class FLIPElement {
 
         const $elm = this._target$Elm;
         +$elm.offsetHeight; // force reflow
-        $elm.style.transitionDuration = "";
+        $elm.style.transitionDuration = `${duration}ms`;
         $elm.style.transform = getTransform(this._elmPos, this._last);
 
         $elm.addEventListener("transitioncancel", this._onTransitionEnd);

@@ -61,12 +61,11 @@ export class MediumLightboxCore {
 
         document.body.appendChild($lightbox);
         if (options.duration > 0) {
-            console.log("Animating", { $img, $copiedImg, $lightbox });
             const flip = new FLIPElement($img);
             await flip.first($img)
                 .last($copiedImg)
                 .invert($copiedImg)
-                .play();
+                .play(options.duration);
         }
 
         return $lightbox;
@@ -87,7 +86,7 @@ export class MediumLightboxCore {
             await flip.first(this.active.$copiedImg)
                 .last(this.active.$img)
                 .invert(this.active.$copiedImg)
-                .play();
+                .play(this.options.duration);
         }
         this.active.$img.classList.remove(Classes.ORIGINAL_OPEN);
         const $parent = this.active.$lightbox.parentNode;
@@ -101,6 +100,7 @@ export class MediumLightboxCore {
     /** Binds an image (or multiple), such that clicking it will open it
      * @param $imgs The image(s) to bind. If this is a string, it's used as a selector. */
     bind($imgs: HTMLElement | HTMLElement[] | string, opts?: ImageOptions): void {
+        this.setOptions(opts || {});
         if (typeof $imgs === "string") {
             $imgs = Array.from(document.querySelectorAll($imgs));
         }

@@ -1,5 +1,9 @@
 import { ImageOptions, Classes } from "./types";
 
+/**
+ * Clones an image for use in the lightbox, optionally with a new source.
+ * Note that some things might change (e.g. srcset might be removed, sizes might be updated)
+ */
 export function cloneImage($img: HTMLImageElement, newSrc?: string): HTMLImageElement;
 export function cloneImage($img: HTMLPictureElement): HTMLPictureElement;
 export function cloneImage($img: HTMLPictureElement, newSrc: string): HTMLImageElement;
@@ -12,6 +16,9 @@ export function cloneImage($img: any, newSrc?: string) {
                 $newImg.srcset = "";
             }
         }
+        if ($newImg.sizes) {
+            $newImg.sizes = "100vw";
+        }
         return $newImg;
     } else if ($img instanceof HTMLPictureElement) {
         if (newSrc) {
@@ -19,7 +26,14 @@ export function cloneImage($img: any, newSrc?: string) {
             $newImg.src = newSrc;
             return $newImg;
         } else {
-            return $img.cloneNode(true) as HTMLPictureElement;
+            const $newImg = $img.cloneNode(true) as HTMLPictureElement;
+            const $sources = Array.from($newImg.querySelectorAll("source"));
+            $sources.forEach($source => {
+                if ($source.sizes) {
+                    $source.sizes = "100vw";
+                }
+            });
+            return $newImg;
         }
     }
 }
