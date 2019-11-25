@@ -2,12 +2,9 @@ import { ImageOptions, Classes } from "./types";
 
 /**
  * Clones an image for use in the lightbox, optionally with a new source.
- * Note that some things might change (e.g. srcset might be removed, sizes might be updated)
+ * Always returns an <img>, regardless of the input element.
  */
-export function cloneImage($img: HTMLImageElement, newSrc?: string): HTMLImageElement;
-export function cloneImage($img: HTMLPictureElement): HTMLPictureElement;
-export function cloneImage($img: HTMLPictureElement, newSrc: string): HTMLImageElement;
-export function cloneImage($img: any, newSrc?: string) {
+export function cloneImage($img: HTMLPictureElement|HTMLImageElement, newSrc?: string): HTMLImageElement {
     if ($img instanceof HTMLImageElement) {
         const $newImg = $img.cloneNode() as HTMLImageElement;
         if (newSrc) {
@@ -20,27 +17,45 @@ export function cloneImage($img: any, newSrc?: string) {
             $newImg.sizes = "100vw";
         }
         return $newImg;
-    } else if ($img instanceof HTMLPictureElement) {
-        if (newSrc) {
-            const $newImg = document.createElement("img");
-            $newImg.src = newSrc;
-            return $newImg;
-        } else {
-            const $newImg = $img.cloneNode(true) as HTMLPictureElement;
-            const $sources = Array.from($newImg.querySelectorAll("source"));
-            $sources.forEach($source => {
-                if ($source.sizes) {
-                    $source.sizes = "100vw";
-                }
-            });
-            return $newImg;
-        }
+    } else {
+        const src = newSrc
+            ? newSrc
+            : getSrcFromImage($img);
+
+        const $newImg = document.createElement("img");
+        $newImg.src = src;
+        return $newImg;
     }
 }
 
 export function isValidImage($elm: HTMLElement): $elm is HTMLImageElement|HTMLPictureElement {
     const types = [HTMLPictureElement, HTMLImageElement];
     return types.some(type => $elm instanceof type);
+}
+
+export function getHighResFromPicture($picture: HTMLPictureElement): string {
+    const cur = { width: $picture.offsetWidth, src: getSrcFromImage($picture) };
+    const $sources = Array.from($picture.querySelectorAll("source"));
+    $sources.forEach(
+        $source => {
+            // ignore images that don't match
+            if ($source.media && !matchMedia($source.media).matches) {
+                return;
+            }
+            // extract size and URL from srcset
+            if (!$source.srcset) { return; }
+            const srcset = $source.srcset;
+            srcset.split(",").forEach(entry => {
+                const widthMatch = /([^ ]+) (\d+)w$/.exec(entry);
+                if (!widthMatch) { return; }
+                if (+widthMatch[2] > cur.width) {
+                    cur.src = widthMatch[1];
+                    cur.width = +widthMatch[2];
+                }
+            });
+        }
+    );
+    return cur.src;
 }
 
 export function getSrcFromImage($elm: HTMLImageElement | HTMLPictureElement): string {

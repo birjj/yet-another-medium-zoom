@@ -1,5 +1,5 @@
 import { AlbumEntry, ImageOptions, GlobalOptions, Classes, STATES } from "./types";
-import { defaultLightboxGenerator, isValidImage, getSrcFromImage, cloneImage } from "./dom";
+import { defaultLightboxGenerator, isValidImage, getSrcFromImage, getHighResFromPicture, cloneImage } from "./dom";
 import FLIPElement from "./flip";
 import "./style.css";
 
@@ -36,19 +36,19 @@ export class MediumLightboxCore {
         if (this.active) { await this.close(); }
 
         const options = Object.assign({}, this.options, opts || {});
+        if (!options.highRes && $img instanceof HTMLPictureElement) {
+            const highRes = getHighResFromPicture($img);
+            console.log("Extracted highres", highRes);
+            options.highRes = highRes;
+        }
 
         this.state = STATES.Opening;
-        let $copiedImg: HTMLPictureElement|HTMLImageElement;
-        let origSrc: string|undefined;
-        // lots of the type checks below here aren't really needed, but are safeguards to make TypeScript happy
+        const origSrc = getSrcFromImage($img);
+        const $copiedImg = cloneImage($img, $img instanceof HTMLPictureElement ? origSrc : undefined);
         if (options.highRes) {
-            origSrc = getSrcFromImage($img);
-            $copiedImg = cloneImage($img, origSrc);
             const loader = new Image();
             loader.addEventListener("load", () => this._highResLoaded($copiedImg, options));
             loader.src = options.highRes;
-        } else {
-            $copiedImg = cloneImage($img);
         }
         $copiedImg.classList.add(Classes.IMG);
         $copiedImg.classList.remove(Classes.ORIGINAL);
