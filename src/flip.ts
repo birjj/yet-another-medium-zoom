@@ -160,10 +160,10 @@ function getTransformedSnapshot($elm: HTMLElement): Snapshot {
     const boundingRect = $elm.getBoundingClientRect();
     const $doc = document.documentElement;
     const outp = {
-        left: boundingRect.left + (window.pageXOffset || $doc.scrollLeft) - ($doc.clientLeft || 0),
-        top: boundingRect.top + (window.pageYOffset || $doc.scrollTop) - ($doc.clientTop || 0),
-        width: boundingRect.width,
-        height: boundingRect.height
+        left: Math.round(boundingRect.left) + (window.pageXOffset || $doc.scrollLeft) - ($doc.clientLeft || 0),
+        top: Math.round(boundingRect.top) + (window.pageYOffset || $doc.scrollTop) - ($doc.clientTop || 0),
+        width: Math.round(boundingRect.width),
+        height: Math.round(boundingRect.height)
     };
     outp.left += outp.width / 2;
     outp.top += outp.height / 2;
