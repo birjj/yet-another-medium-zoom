@@ -27,4 +27,11 @@ export enum Classes {
     HIGHRES = "yamz__highres",
     ORIGINAL = "yamz__original",
     ORIGINAL_OPEN = "yamz__original--open"
-}
+};
+
+export enum STATES {
+    Closed,
+    Opening,
+    Open,
+    Closing
+};

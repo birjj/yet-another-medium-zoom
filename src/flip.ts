@@ -58,7 +58,7 @@ export default class FLIPElement {
     }
 
     play(duration = 300) {
-        if (!this._target$Elm || !this._elmPos || !this._last) {
+        if (!this._target$Elm || !this._elmPos || !this._first || !this._last) {
             throw new Error(".invert() must be called before .play()");
         }
         if (this.playing) { this.stop(); }
@@ -90,7 +90,28 @@ export default class FLIPElement {
         this._target$Elm = undefined;
     }
 
+    /** Updates an animation while it's playing */
+    update($target: HTMLElement, updater?: () => void) {
+        const $elm = this._target$Elm;
+        if (!this.playing || !$elm || !this._first) { return; }
+        console.log("Updating", $target, $elm.style.transform);
+
+        const currentPos = getTransformedSnapshot($elm);
+        if (updater) {
+            updater();
+        }
+        this._elmPos = getSnapshot($elm);
+        this._last = getSnapshot($target);
+        const prevDuration = $elm.style.transitionDuration;
+        $elm.style.transitionDuration = `0ms`;
+        $elm.style.transform = getTransform(this._elmPos, currentPos);
+        +$elm.offsetHeight; // force reflow
+        $elm.style.transitionDuration = prevDuration;
+        $elm.style.transform = getTransform(this._elmPos, this._last);
+    }
+
     _onTransitionEnd(e: TransitionEvent) {
+        console.log("Transition ended");
         if (e.target === this._target$Elm && e.propertyName === "transform") {
             this.stop();
         }
@@ -131,6 +152,21 @@ function getSnapshot($elm: HTMLElement): Snapshot {
         outp.top += (window.pageYOffset || $doc.scrollTop) - ($doc.clientTop || 0);
     }
 
+    return outp;
+}
+
+/** Gets the snapshot of an element, but doesn't ignore transforms (unlike getSnapshot) */
+function getTransformedSnapshot($elm: HTMLElement): Snapshot {
+    const boundingRect = $elm.getBoundingClientRect();
+    const $doc = document.documentElement;
+    const outp = {
+        left: boundingRect.left + (window.pageXOffset || $doc.scrollLeft) - ($doc.clientLeft || 0),
+        top: boundingRect.top + (window.pageYOffset || $doc.scrollTop) - ($doc.clientTop || 0),
+        width: boundingRect.width,
+        height: boundingRect.height
+    };
+    outp.left += outp.width / 2;
+    outp.top += outp.height / 2;
     return outp;
 }
 
