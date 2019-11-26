@@ -1,6 +1,5 @@
 export interface GlobalOptions {
     scrollAllowance: number,
-    zoomOptimistically: boolean,
     wrapAlbums: boolean,
     duration: number,
     container?: HTMLElement,

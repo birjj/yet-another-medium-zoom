@@ -8,14 +8,13 @@ Extensible and configurable Medium-inspired lightbox.
 
 Global options (`GlobalOptions`):
 
-| Key                  | Type                                                    |   Default value | Description                                                                                                                                                           |
-| -------------------- | ------------------------------------------------------- | --------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scrollAllowance`    | `number`                                                |            `40` | How much the user can scroll before the lightbox is closed. `-1` to disable.                                                                                          |
-| `zoomOptimistically` | `boolean`                                               |          `true` | If true, we start animating the zoom before the high-res version has been loaded. Disable if the aspect ratio of your high-res version doesn't match the low-res one. |
-| `wrapAlbums`         | `boolean`                                               |         `false` | Whether the album should wrap. If `false`, the user will be unable to go right at the end of the album.                                                               |
-| `duration`           | `number`                                                |           `400` | How long the animation should take, measured in milliseconds                                                                                                          |
-| `container`          | `HTMLElement`                                           | `document.body` | The element to render the lightbox inside.                                                                                                                            |
-| `lightboxGenerator`  | `(img: HTMLElement, opts: ImageOptions) => HTMLElement` |          `null` | Function which generates the ligthbox, if you want to use a custom one.                                                                                               |
+| Key                 | Type                                                    |   Default value | Description                                                                                             |
+| ------------------- | ------------------------------------------------------- | --------------: | ------------------------------------------------------------------------------------------------------- |
+| `scrollAllowance`   | `number`                                                |            `40` | How much the user can scroll before the lightbox is closed. `-1` to disable.                            |
+| `wrapAlbums`        | `boolean`                                               |         `false` | Whether the album should wrap. If `false`, the user will be unable to go right at the end of the album. |
+| `duration`          | `number`                                                |           `400` | How long the animation should take, measured in milliseconds                                            |
+| `container`         | `HTMLElement`                                           | `document.body` | The element to render the lightbox inside.                                                              |
+| `lightboxGenerator` | `(img: HTMLElement, opts: ImageOptions) => HTMLElement` |          `null` | Function which generates the ligthbox, if you want to use a custom one.                                 |
 
 Individual image options (`ImageOptions`) is every global option plus the following:
 
