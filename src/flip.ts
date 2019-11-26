@@ -94,7 +94,6 @@ export default class FLIPElement {
     update($target: HTMLElement, updater?: () => void) {
         const $elm = this._target$Elm;
         if (!this.playing || !$elm || !this._first) { return; }
-        console.log("Updating", $target, $elm.style.transform);
 
         const currentPos = getTransformedSnapshot($elm);
         if (updater) {
@@ -180,8 +179,7 @@ function getTransform(from: Snapshot, to: Snapshot) {
         height: to.height / from.height
     };
 
-    const minScale = Math.min(delta.width, delta.height);
-    const translation = `translate(${(delta.left / minScale).toFixed(5)}px, ${(delta.top / minScale).toFixed(5)}px)`;
+    const translation = `translate(${(delta.left / delta.width).toFixed(5)}px, ${(delta.top / delta.height).toFixed(5)}px)`;
     const scaling = `scale(${delta.width.toFixed(5)}, ${delta.height.toFixed(5)})`;
     return `${scaling} ${translation}`;
 }
