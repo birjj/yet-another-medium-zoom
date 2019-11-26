@@ -11,6 +11,12 @@ body {
 a {
     color: inherit;
 }
+picture img {
+    display: block;
+}
+img {
+    display: block;
+}
 
 .wrapper {
     display: flex;
@@ -54,7 +60,8 @@ h1 + small {
 }
 
 .wrapper > img,
-.wrapper > figure {
+.wrapper > figure,
+.wrapper > .img-grid {
     margin: 1em 0;
     max-width: 100%;
 }
@@ -64,6 +71,7 @@ h1 + small {
     font-family: sans-serif;
     color: #aaa;
     margin-bottom: -1em;
+    margin-top: 0.25em;
 }
 .wrapper figcaption a {
     position: relative;
@@ -85,4 +93,19 @@ h1 + small {
 .wrapper img {
     max-width: 100%;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.img-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+.img-grid > * {
+    flex-basis: 49%;
+    width: 49%;
+    flex-grow: 1;
+    margin-right: 2%;
+    margin-bottom: 2%;
+}
+.img-grid > *:nth-child(2n) {
+    margin-right: 0;
 }
