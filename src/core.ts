@@ -79,6 +79,13 @@ export class MediumLightboxCore {
             };
             if (this.state === STATES.Opening && this._flip) {
                 this._flip.update($copiedImg, updater);
+            } else if (this.state === STATES.Open && this.active) {
+                this._flip = new FLIPElement(this.active.$img);
+                this._flip.first(this.active.$copiedImg);
+                updater();
+                this._flip.last(this.active.$copiedImg)
+                    .invert(this.active.$copiedImg)
+                    .play(options.duration);
             } else {
                 updater();
             }
