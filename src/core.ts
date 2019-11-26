@@ -7,7 +7,7 @@ export const DEFAULT_OPTS: GlobalOptions = {
     scrollAllowance: 40,
     zoomOptimistically: true,
     wrapAlbums: false,
-    duration: 400,
+    duration: 500,
     container: undefined,
     lightboxGenerator: defaultLightboxGenerator,
 };
