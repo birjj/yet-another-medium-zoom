@@ -17,7 +17,7 @@ export class MediumLightboxCore {
         ...DEFAULT_OPTS,
     };
     state: STATES = STATES.Closed;
-    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLElement, origSrc?: string, options: ImageOptions } = undefined;
+    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLImageElement, origSrc?: string, options: ImageOptions } = undefined;
     _flip?: FLIPElement;
 
     /** Set options used by every lightbox */
@@ -60,13 +60,10 @@ export class MediumLightboxCore {
 
         document.body.appendChild($lightbox);
         if (options.duration > 0) {
-            const $animElm = this.active.$copiedImg instanceof HTMLPictureElement
-                ? this.active.$copiedImg.querySelector("img") || this.active.$copiedImg
-                : this.active.$copiedImg;
             this._flip = new FLIPElement($img);
             await this._flip.first($img)
-                .last($animElm)
-                .invert($animElm)
+                .last(this.active.$copiedImg)
+                .invert(this.active.$copiedImg)
                 .play(options.duration);
         }
         this.state = STATES.Open;
@@ -75,8 +72,8 @@ export class MediumLightboxCore {
     }
 
     /** Called when a high-res version of an image has loaded */
-    _highResLoaded($copiedImg: HTMLImageElement|HTMLPictureElement, options: ImageOptions) {
-        if ($copiedImg instanceof HTMLImageElement && options.highRes) {
+    _highResLoaded($copiedImg: HTMLImageElement, options: ImageOptions) {
+        if (options.highRes) {
             const updater = () => {
                 if (!$copiedImg || !options.highRes) { return; }
                 $copiedImg.src = options.highRes;
@@ -100,19 +97,16 @@ export class MediumLightboxCore {
         const options = active.options;
         this.active.$lightbox.classList.add(Classes.WRAPPER_CLOSING);
         if (options.duration) {
-            const $animElm = this.active.$copiedImg instanceof HTMLPictureElement
-                ? this.active.$copiedImg.querySelector("img") || this.active.$copiedImg
-                : this.active.$copiedImg;
             const flip = new FLIPElement($img);
-            flip.first($animElm)
+            flip.first(this.active.$copiedImg)
                 .last(this.active.$img);
 
             // we replace the src here so that it happens while the movement is fastest, (hopefully) making it less likely to be noticed
-            if (this.active.origSrc && this.active.$copiedImg instanceof HTMLImageElement) {
+            if (this.active.origSrc) {
                 this.active.$copiedImg.src = this.active.origSrc;
             }
 
-            await flip.invert($animElm)
+            await flip.invert(this.active.$copiedImg)
                 .play(options.duration);
         }
         active.$img.classList.remove(Classes.ORIGINAL_OPEN);
