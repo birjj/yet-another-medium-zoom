@@ -18,6 +18,7 @@ export class MediumLightboxCore {
     state: STATES = STATES.Closed;
     active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLImageElement, $highRes?: HTMLImageElement, origSrc?: string, options: ImageOptions } = undefined;
     _flip?: FLIPElement;
+    _openTime?: number;
 
     /** Set options used by every lightbox */
     setOptions(newOpts: Partial<GlobalOptions>) {
@@ -51,14 +52,12 @@ export class MediumLightboxCore {
         const $lightbox = this.options.lightboxGenerator($copiedImg, options);
         $lightbox.addEventListener("click", () => this.close());
         this.active = { $lightbox, $img, $copiedImg, origSrc, options };
+        this._openTime = Date.now();
 
         if (options.highRes) {
             const $highRes = new Image();
             $highRes.decoding = "async";
             $highRes.addEventListener("load", async () => {
-                if ($highRes.decode) {
-                    await $highRes.decode();
-                }
                 this._highResLoaded($highRes);
             });
             $highRes.src = options.highRes;
@@ -91,11 +90,12 @@ export class MediumLightboxCore {
             if ($copiedImg.parentElement) {
                 this.active.$highRes = $highRes;
                 this.active.$lightbox.classList.add(Classes.HAS_HIGHRES);
-                $copiedImg.parentElement.appendChild($highRes);
+                $copiedImg.parentElement.insertBefore($highRes, $copiedImg);
             }
         };
+
         if (this.state === STATES.Opening && this._flip) {
-            this._flip.update($animElm, updater);
+            this._flip.update($animElm, updater, this.active.options.duration);
         } else if (this.state === STATES.Open && this.active) {
             this._flip = new FLIPElement(this.active.$img);
             this._flip.first(this.active.$copiedImg);
@@ -123,11 +123,6 @@ export class MediumLightboxCore {
             const flip = new FLIPElement($img);
             flip.first(this.active.$copiedImg)
                 .last(this.active.$img);
-
-            // we replace the src here so that it happens while the movement is fastest, (hopefully) making it less likely to be noticed
-            if (this.active.origSrc) {
-                this.active.$copiedImg.src = this.active.origSrc;
-            }
 
             await flip.invert($animElm)
                 .play(options.duration);

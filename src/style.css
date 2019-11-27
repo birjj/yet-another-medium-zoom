@@ -55,38 +55,8 @@
     display: inline-block;
     position: relative;
     will-change: transform;
-    transition: transform linear;
-}
-.yamz__wrapper--has-highres .yamz__img-wrapper > img:not(.yamz__highres) {
-    pointer-events: none;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    animation: yamz-fade-out 0.5s both;
-}
-@keyframes yamz-fade-out {
-    0% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-    }
-}
-
-.yamz__img-wrapper > img {
-    max-width: calc(100vw - 64px);
-    max-height: calc(100vh - 64px);
-    margin: 0 auto;
-
-    animation: yamz-shadow-in 0.4s;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-}
-.yamz__wrapper--closing .yamz__img-wrapper > img {
-    animation: yamz-shadow-in 0.4s reverse both;
+    transition: transform ease-out;
+    animation: yamz-shadow-in 5s both;
 }
 @keyframes yamz-shadow-in {
     0% {
@@ -95,4 +65,38 @@
     100% {
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
     }
+}
+.yamz__wrapper--has-highres .yamz__img {
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+.yamz__highres {
+    animation: yamz-fade-in 0.5s;
+    transition: opacity 0.2s;
+    opacity: 1;
+    will-change: opacity;
+}
+.yamz__wrapper--has-highres.yamz__wrapper--closing .yamz__highres {
+    opacity: 0;
+}
+@keyframes yamz-fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.yamz__img-wrapper > img {
+    max-width: calc(100vw - 64px);
+    max-height: calc(100vh - 64px);
+    margin: 0 auto;
 }

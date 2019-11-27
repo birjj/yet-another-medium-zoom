@@ -91,7 +91,7 @@ export default class FLIPElement {
     }
 
     /** Updates an animation while it's playing */
-    update($target: HTMLElement, updater?: () => void) {
+    update($target: HTMLElement, updater?: () => void, duration?: number) {
         const $elm = this._target$Elm;
         if (!this.playing || !$elm || !this._first) { return; }
 
@@ -101,7 +101,9 @@ export default class FLIPElement {
         }
         this._elmPos = getSnapshot($elm);
         this._last = getSnapshot($target);
-        const prevDuration = $elm.style.transitionDuration;
+        const prevDuration = duration
+            ? `${duration}ms`
+            : $elm.style.transitionDuration;
         $elm.style.transitionDuration = `0ms`;
         $elm.style.transform = getTransform(this._elmPos, currentPos);
         +$elm.offsetHeight; // force reflow
@@ -179,7 +181,7 @@ function getTransform(from: Snapshot, to: Snapshot) {
         height: to.height / from.height
     };
 
-    const translation = `translate(${(delta.left / delta.width).toFixed(5)}px, ${(delta.top / delta.height).toFixed(5)}px)`;
+    const translation = `translate(${(delta.left).toFixed(5)}px, ${(delta.top).toFixed(5)}px)`;
     const scaling = `scale(${delta.width.toFixed(5)}, ${delta.height.toFixed(5)})`;
-    return `${scaling} ${translation}`;
+    return `${translation} ${scaling}`;
 }
