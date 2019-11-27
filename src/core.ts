@@ -16,7 +16,7 @@ export class MediumLightboxCore {
         ...DEFAULT_OPTS,
     };
     state: STATES = STATES.Closed;
-    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLImageElement, origSrc?: string, options: ImageOptions } = undefined;
+    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLImageElement, $highRes?: HTMLImageElement, origSrc?: string, options: ImageOptions } = undefined;
     _flip?: FLIPElement;
 
     /** Set options used by every lightbox */
@@ -44,11 +44,6 @@ export class MediumLightboxCore {
         this.state = STATES.Opening;
         const origSrc = getSrcFromImage($img);
         const $copiedImg = cloneImage($img, $img instanceof HTMLPictureElement ? origSrc : undefined);
-        if (options.highRes) {
-            const loader = new Image();
-            loader.addEventListener("load", () => this._highResLoaded($copiedImg, options));
-            loader.src = options.highRes;
-        }
         $copiedImg.classList.add(Classes.IMG);
         $copiedImg.classList.remove(Classes.ORIGINAL);
         $img.classList.add(Classes.ORIGINAL_OPEN);
@@ -57,12 +52,27 @@ export class MediumLightboxCore {
         $lightbox.addEventListener("click", () => this.close());
         this.active = { $lightbox, $img, $copiedImg, origSrc, options };
 
+        if (options.highRes) {
+            const $highRes = new Image();
+            $highRes.decoding = "async";
+            $highRes.addEventListener("load", async () => {
+                if ($highRes.decode) {
+                    await $highRes.decode();
+                }
+                this._highResLoaded($highRes);
+            });
+            $highRes.src = options.highRes;
+            $highRes.classList.add(Classes.HIGHRES);
+        }
+
         document.body.appendChild($lightbox);
+        $lightbox.style.top = `${window.scrollY || document.body.scrollTop || document.documentElement.scrollTop || 0}px`;
+        const $animElm = $copiedImg.parentElement || $copiedImg;
         if (options.duration > 0) {
             this._flip = new FLIPElement($img);
             await this._flip.first($img)
                 .last(this.active.$copiedImg)
-                .invert(this.active.$copiedImg)
+                .invert($animElm)
                 .play(options.duration);
         }
         this.state = STATES.Open;
@@ -71,24 +81,30 @@ export class MediumLightboxCore {
     }
 
     /** Called when a high-res version of an image has loaded */
-    _highResLoaded($copiedImg: HTMLImageElement, options: ImageOptions) {
-        if (options.highRes) {
-            const updater = () => {
-                if (!$copiedImg || !options.highRes) { return; }
-                $copiedImg.src = options.highRes;
-            };
-            if (this.state === STATES.Opening && this._flip) {
-                this._flip.update($copiedImg, updater);
-            } else if (this.state === STATES.Open && this.active) {
-                this._flip = new FLIPElement(this.active.$img);
-                this._flip.first(this.active.$copiedImg);
-                updater();
-                this._flip.last(this.active.$copiedImg)
-                    .invert(this.active.$copiedImg)
-                    .play(options.duration);
-            } else {
-                updater();
+    _highResLoaded($highRes: HTMLImageElement) {
+        if (!this.active) { return; }
+        const $copiedImg = this.active.$copiedImg;
+        const $animElm = $copiedImg.parentElement || $copiedImg;
+
+        const updater = () => {
+            if (!this.active) { return; }
+            if ($copiedImg.parentElement) {
+                this.active.$highRes = $highRes;
+                this.active.$lightbox.classList.add(Classes.HAS_HIGHRES);
+                $copiedImg.parentElement.appendChild($highRes);
             }
+        };
+        if (this.state === STATES.Opening && this._flip) {
+            this._flip.update($animElm, updater);
+        } else if (this.state === STATES.Open && this.active) {
+            this._flip = new FLIPElement(this.active.$img);
+            this._flip.first(this.active.$copiedImg);
+            updater();
+            this._flip.last(this.active.$copiedImg)
+                .invert($animElm)
+                .play(this.active.options.duration);
+        } else {
+            updater();
         }
     }
 
@@ -102,6 +118,7 @@ export class MediumLightboxCore {
         const active = this.active; // we store this for later in case .active is updated while we're animating the close
         const options = active.options;
         this.active.$lightbox.classList.add(Classes.WRAPPER_CLOSING);
+        const $animElm = this.active.$copiedImg.parentElement || this.active.$copiedImg;
         if (options.duration) {
             const flip = new FLIPElement($img);
             flip.first(this.active.$copiedImg)
@@ -112,7 +129,7 @@ export class MediumLightboxCore {
                 this.active.$copiedImg.src = this.active.origSrc;
             }
 
-            await flip.invert(this.active.$copiedImg)
+            await flip.invert($animElm)
                 .play(options.duration);
         }
         active.$img.classList.remove(Classes.ORIGINAL_OPEN);

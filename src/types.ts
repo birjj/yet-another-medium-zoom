@@ -22,8 +22,9 @@ export enum Classes {
     WRAPPER_CLOSING = "yamz__wrapper--closing",
     IMG_WRAPPER = "yamz__img-wrapper",
     IMG = "yamz__img",
-    CAPTION = "yamz__caption",
     HIGHRES = "yamz__highres",
+    HAS_HIGHRES = "yamz__wrapper--has-highres",
+    CAPTION = "yamz__caption",
     ORIGINAL = "yamz__original",
     ORIGINAL_OPEN = "yamz__original--open"
 };

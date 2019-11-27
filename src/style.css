@@ -6,17 +6,21 @@
 }
 
 .yamz__wrapper {
-    position: fixed;
-    top: 0;
+    position: absolute;
     left: 0;
-    width: 100vw;
+    width: 100%;
     height: 100vh;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
     cursor: zoom-out;
 }
 .yamz__wrapper::before {
     content: "";
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     right: 0;
@@ -48,28 +52,45 @@
 
 .yamz__img-wrapper {
     margin: 32px;
-    width: calc(100% - 64px);
-    height: calc(100% - 64px);
-    text-align: center;
-    display: flex;
-    align-items: center;
+    display: inline-block;
+    position: relative;
+    will-change: transform;
+    transition: transform linear;
+}
+.yamz__wrapper--has-highres .yamz__img-wrapper > img:not(.yamz__highres) {
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    animation: yamz-fade-out 0.5s both;
+}
+@keyframes yamz-fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 .yamz__img-wrapper > img {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: calc(100vw - 64px);
+    max-height: calc(100vh - 64px);
     margin: 0 auto;
 
-    transition: transform cubic-bezier(0.2, 0, 0.2, 1);
-    will-change: transform;
     animation: yamz-shadow-in 0.4s;
-}
-.yamz__img-wrapper img {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+.yamz__wrapper--closing .yamz__img-wrapper > img {
+    animation: yamz-shadow-in 0.4s reverse both;
 }
 @keyframes yamz-shadow-in {
     0% {
-        box-shadow: 0 0px 8px rgba(0, 0, 0, 0);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0);
     }
     100% {
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
