@@ -126,7 +126,6 @@ interface Snapshot {
     height: number,
 };
 
-window.getSnapshot = getSnapshot;
 function getSnapshot($elm: HTMLElement): Snapshot {
     const outp = {
         width: $elm.offsetWidth,
@@ -157,7 +156,6 @@ function getSnapshot($elm: HTMLElement): Snapshot {
     return outp;
 }
 
-window.getTransformedSnapshot = getTransformedSnapshot;
 /** Gets the snapshot of an element, but doesn't ignore transforms (unlike getSnapshot) */
 function getTransformedSnapshot($elm: HTMLElement): Snapshot {
     const boundingRect = $elm.getBoundingClientRect();
