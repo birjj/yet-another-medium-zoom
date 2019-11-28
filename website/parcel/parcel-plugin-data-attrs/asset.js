@@ -8,7 +8,7 @@ class HTMLAssetWithDataAttrs extends HTMLAsset {
         this.ast.walk(node => {
             if (node.attrs) {
                 for (let attr in node.attrs) {
-                    if (/^data\-/.test(attr)) {
+                    if (/^data\-/.test(attr) && /\.\w{2,5}$/.test(node.attrs[attr])) {
                         console.log("Checking ", attr, node.attrs[attr]);
                         const depHandler = this.getAttrDepHandler(attr);
                         node.attrs[attr] = depHandler.call(this, node.attrs[attr], undefined);
