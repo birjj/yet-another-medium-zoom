@@ -55,7 +55,7 @@
     display: inline-block;
     position: relative;
     will-change: transform;
-    transition: transform ease-out;
+    transition: transform ease;
     animation: yamz-shadow-in 5s both;
 }
 @keyframes yamz-shadow-in {
@@ -78,7 +78,7 @@
     z-index: -1;
 }
 .yamz__highres {
-    animation: yamz-fade-in 0.5s;
+    animation: yamz-fade-in 0.2s;
     transition: opacity 0.2s;
     opacity: 1;
     will-change: opacity;
