@@ -33,7 +33,7 @@ export function isValidImage($elm: HTMLElement): $elm is HTMLImageElement|HTMLPi
     return types.some(type => $elm instanceof type);
 }
 
-export function getHighResFromPicture($picture: HTMLPictureElement): string {
+export function getHighResFromPicture($picture: HTMLPictureElement, targetWidth=document.body.clientWidth): string {
     const cur = { width: $picture.offsetWidth, src: getSrcFromImage($picture) };
     const $sources = Array.from($picture.querySelectorAll("source"));
     $sources.forEach(
@@ -49,6 +49,11 @@ export function getHighResFromPicture($picture: HTMLPictureElement): string {
                 const widthMatch = /([^ ]+) (\d+)w$/.exec(entry);
                 if (!widthMatch) { return; }
                 if (+widthMatch[2] > cur.width) {
+                    const width = +widthMatch[2];
+                    // if we've already found a smaller image that is bigger than the screen, use that image instead
+                    if (width > cur.width && cur.width >= targetWidth) {
+                        return;
+                    }
                     cur.src = widthMatch[1];
                     cur.width = +widthMatch[2];
                 }
