@@ -1,31 +1,17 @@
 import { ImageOptions, Classes } from "./types";
 
 /**
- * Clones an image for use in the lightbox, optionally with a new source.
+ * Creates an image for use in the lightbox based on an input element.
  * Always returns an <img>, regardless of the input element.
  */
-export function cloneImage($img: HTMLPictureElement|HTMLImageElement, newSrc?: string): HTMLImageElement {
-    if ($img instanceof HTMLImageElement) {
-        const $newImg = $img.cloneNode() as HTMLImageElement;
-        if (newSrc) {
-            $newImg.src = newSrc;
-            if ($newImg.srcset) {
-                $newImg.srcset = "";
-            }
-        }
-        if ($newImg.sizes) {
-            $newImg.sizes = "100vw";
-        }
-        return $newImg;
-    } else {
-        const src = newSrc
-            ? newSrc
-            : getSrcFromImage($img);
+export function generateLightboxImg($img: HTMLPictureElement|HTMLImageElement, newSrc?: string): HTMLImageElement {
+    const $newImg = document.createElement("img");
+    const src = newSrc
+        ? newSrc
+        : getSrcFromImage($img);
+    $newImg.src = src;
 
-        const $newImg = document.createElement("img");
-        $newImg.src = src;
-        return $newImg;
-    }
+    return $newImg;
 }
 
 export function isValidImage($elm: HTMLElement): $elm is HTMLImageElement|HTMLPictureElement {
@@ -33,35 +19,46 @@ export function isValidImage($elm: HTMLElement): $elm is HTMLImageElement|HTMLPi
     return types.some(type => $elm instanceof type);
 }
 
-export function getHighResFromPicture($picture: HTMLPictureElement, targetWidth=document.body.clientWidth): string {
-    const cur = { width: $picture.offsetWidth, src: getSrcFromImage($picture) };
-    const $sources = Array.from($picture.querySelectorAll("source"));
-    $sources.forEach(
-        $source => {
-            // ignore images that don't match
-            if ($source.media && !matchMedia($source.media).matches) {
-                return;
-            }
-            // extract size and URL from srcset
-            if (!$source.srcset) { return; }
-            const srcset = $source.srcset;
-            srcset.split(",").forEach(entry => {
-                const widthMatch = /([^ ]+) (\d+)w$/.exec(entry);
-                if (!widthMatch) { return; }
-                if (+widthMatch[2] > cur.width) {
-                    const width = +widthMatch[2];
-                    // if we've already found a smaller image that is bigger than the screen, use that image instead
-                    if (width > cur.width && cur.width >= targetWidth) {
-                        return;
-                    }
-                    cur.src = widthMatch[1];
-                    cur.width = +widthMatch[2];
-                }
-            });
+export function getHighResFromImage($image: HTMLImageElement|HTMLPictureElement, targetWidth=document.body.clientWidth): string {
+    let cur = { width: $image.offsetWidth, src: getSrcFromImage($image) };
+    const $targets = $image instanceof HTMLImageElement
+        ? [$image]
+        : Array.from($image.querySelectorAll("source"));
+    $targets.forEach(($target: HTMLImageElement|HTMLSourceElement) => {
+        // ignore sources that don't match
+        if ($target instanceof HTMLSourceElement && $target.media && !matchMedia($target.media).matches) {
+            return;
         }
-    );
+        // extract size and URL from srcset
+        if (!$target.srcset) { return; }
+        const srcset = $target.srcset;
+        const parsed = getHighestFromSrcSet(srcset, targetWidth);
+        if (parsed && parsed.width > cur.width) {
+            cur = parsed;
+        }
+    });
     return cur.src;
 }
+
+export function getHighestFromSrcSet(srcset: string, targetWidth=document.body.clientWidth) {
+    const parsed = srcset.split(",").map(entry => {
+        const widthMatch = /([^ ]+) (\d+)w$/.exec(entry);
+        if (!widthMatch) { return null; }
+        return {
+            src: widthMatch[1],
+            width: +widthMatch[2],
+        };
+    });
+
+    return parsed.reduce((prev, entry) => {
+        if (!entry) { return prev; }
+        // if we've already found a smaller image that is bigger than the screen, use that image instead
+        if (prev && entry.width > prev.width && prev.width >= targetWidth) {
+            return prev;
+        }
+        return entry;
+    }, null);
+};
 
 export function getSrcFromImage($elm: HTMLImageElement | HTMLPictureElement): string {
     if ($elm instanceof HTMLImageElement) {

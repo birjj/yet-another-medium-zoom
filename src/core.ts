@@ -1,5 +1,11 @@
 import { AlbumEntry, ImageOptions, GlobalOptions, Classes, STATES } from "./types";
-import { defaultLightboxGenerator, isValidImage, getSrcFromImage, getHighResFromPicture, cloneImage } from "./dom";
+import {
+    defaultLightboxGenerator,
+    isValidImage,
+    getSrcFromImage,
+    getHighResFromImage,
+    generateLightboxImg
+} from "./dom";
 import FLIPElement from "./flip";
 import "./style.css";
 
@@ -36,15 +42,16 @@ export class MediumLightboxCore {
         if (this.active) { await this.close(); }
 
         const options = Object.assign({}, this.options, opts || {});
-        if (!options.highRes && $img instanceof HTMLPictureElement) {
-            const highRes = getHighResFromPicture($img);
-            console.log("Extracted highres", highRes);
+        const hasSrcSet = ($img instanceof HTMLPictureElement) || $img.srcset;
+
+        if (!options.highRes && hasSrcSet) {
+            const highRes = getHighResFromImage($img);
             options.highRes = highRes;
         }
 
         this.state = STATES.Opening;
         const origSrc = getSrcFromImage($img);
-        const $copiedImg = cloneImage($img, $img instanceof HTMLPictureElement ? origSrc : undefined);
+        const $copiedImg = generateLightboxImg($img);
         $copiedImg.classList.add(Classes.IMG);
         $copiedImg.classList.remove(Classes.ORIGINAL);
         $img.classList.add(Classes.ORIGINAL_OPEN);
