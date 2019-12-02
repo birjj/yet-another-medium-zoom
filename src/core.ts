@@ -44,23 +44,25 @@ export class MediumLightboxCore {
         const options = Object.assign({}, this.options, opts || {});
         const hasSrcSet = ($img instanceof HTMLPictureElement) || $img.srcset;
 
+        // if we weren't explicitly given a highres, try to extract one from the image
         if (!options.highRes && hasSrcSet) {
             const highRes = getHighResFromImage($img);
             options.highRes = highRes;
         }
 
+        // generate our lightbox
         this.state = STATES.Opening;
         const origSrc = getSrcFromImage($img);
         const $copiedImg = generateLightboxImg($img);
         $copiedImg.classList.add(Classes.IMG);
         $copiedImg.classList.remove(Classes.ORIGINAL);
         $img.classList.add(Classes.ORIGINAL_OPEN);
-
         const $lightbox = this.options.lightboxGenerator($copiedImg, options);
         $lightbox.addEventListener("click", () => this.close());
         this.active = { $lightbox, $img, $copiedImg, origSrc, options };
         this._openTime = Date.now();
 
+        // start loading the highres version if we have one
         if (options.highRes) {
             const $highRes = new Image();
             $highRes.decoding = "async";
@@ -79,6 +81,7 @@ export class MediumLightboxCore {
             $highRes.classList.add(Classes.HIGHRES);
         }
 
+        // then insert and animate it
         document.body.appendChild($lightbox);
         $lightbox.style.top = `${window.scrollY || document.body.scrollTop || document.documentElement.scrollTop || 0}px`;
         const $animElm = $copiedImg.parentElement || $copiedImg;
@@ -100,6 +103,7 @@ export class MediumLightboxCore {
         const $copiedImg = this.active.$copiedImg;
         const $animElm = $copiedImg.parentElement || $copiedImg;
 
+        // function that inserts the highres, resizing the img wrapper to the size of the highres
         const updater = () => {
             if (!this.active) { return; }
             if ($copiedImg.parentElement) {
