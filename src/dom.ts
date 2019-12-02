@@ -95,5 +95,13 @@ export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) 
         $wrapper.appendChild($caption);
     }
 
+    // add loading UI if we're going to load a highres
+    if (opts.highRes) {
+        $wrapper.classList.add(Classes.HAS_HIGHRES);
+        const $loader = document.createElement("div");
+        $loader.classList.add(Classes.LOADER);
+        $imgWrapper.insertBefore($loader, $img);
+    }
+
     return $wrapper;
 }

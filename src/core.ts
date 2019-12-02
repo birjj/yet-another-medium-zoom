@@ -67,6 +67,14 @@ export class MediumLightboxCore {
             $highRes.addEventListener("load", async () => {
                 this._highResLoaded($highRes);
             });
+            $highRes.addEventListener("error", e => {
+                console.error(`High-res image failed to load`, e);
+                $lightbox.classList.remove(Classes.HAS_HIGHRES);
+                const $loader = $lightbox.querySelector(`.${Classes.LOADER}`);
+                if ($loader && $loader.parentNode) {
+                    $loader.parentNode.removeChild($loader);
+                }
+            });
             $highRes.src = options.highRes;
             $highRes.classList.add(Classes.HIGHRES);
         }
@@ -96,8 +104,8 @@ export class MediumLightboxCore {
             if (!this.active) { return; }
             if ($copiedImg.parentElement) {
                 this.active.$highRes = $highRes;
-                this.active.$lightbox.classList.add(Classes.HAS_HIGHRES);
-                $copiedImg.parentElement.insertBefore($highRes, $copiedImg);
+                this.active.$lightbox.classList.add(Classes.HIGHRES_LOADED);
+                $copiedImg.parentElement.insertBefore($highRes, $copiedImg.parentElement.firstChild);
             }
         };
 

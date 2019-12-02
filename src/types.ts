@@ -24,9 +24,11 @@ export enum Classes {
     IMG = "yamz__img",
     HIGHRES = "yamz__highres",
     HAS_HIGHRES = "yamz__wrapper--has-highres",
+    HIGHRES_LOADED = "yamz__wrapper--highres-loaded",
     CAPTION = "yamz__caption",
     ORIGINAL = "yamz__original",
-    ORIGINAL_OPEN = "yamz__original--open"
+    ORIGINAL_OPEN = "yamz__original--open",
+    LOADER = "yamz__loader",
 };
 
 export enum STATES {
