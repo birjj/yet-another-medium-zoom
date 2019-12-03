@@ -13,7 +13,7 @@ import "./style.css";
 export const DEFAULT_OPTS: GlobalOptions = {
     scrollAllowance: 128,
     wrapAlbums: false,
-    duration: 500,
+    duration: 300,
     container: undefined,
     lightboxGenerator: defaultLightboxGenerator,
 };
@@ -96,7 +96,7 @@ export class MediumLightboxCore {
         }
 
         // then insert and animate it
-        document.body.appendChild($lightbox);
+        (options.container || document.body).appendChild($lightbox);
         $lightbox.style.top = `${this.active.scrollPos}px`;
         const $animElm = $copiedImg.parentElement || $copiedImg;
         if (options.duration > 0) {
