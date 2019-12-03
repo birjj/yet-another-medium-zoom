@@ -73,6 +73,12 @@ export function getSrcFromImage($elm: HTMLImageElement | HTMLPictureElement): st
     return "";
 }
 
+export function getScrollPosition(horizontal: boolean = false): number {
+    return horizontal
+        ? window.scrollX || document.body.scrollLeft || document.documentElement.scrollLeft || 0
+        : window.scrollY || document.body.scrollTop || document.documentElement.scrollTop || 0;
+}
+
 export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) {
     const $wrapper = document.createElement("aside");
     $wrapper.classList.add(Classes.WRAPPER);

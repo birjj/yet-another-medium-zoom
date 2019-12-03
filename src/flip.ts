@@ -1,3 +1,5 @@
+import { getScrollPosition } from "./dom";
+
 /** Used to make sure a single element never has two animations at a time */
 const elmMap: Map<HTMLElement, FLIPElement> = new Map();
 
@@ -149,8 +151,8 @@ function getSnapshot($elm: HTMLElement): Snapshot {
     // if the element is fixed, offsetLeft/Top will be 0 when we want it to be the scroll position
     if ($elm.offsetTop === 0 && $elm.offsetLeft === 0 && window.getComputedStyle($elm).position === "fixed") {
         const $doc = document.documentElement;
-        outp.left += (window.pageXOffset || $doc.scrollLeft) - ($doc.clientLeft || 0);
-        outp.top += (window.pageYOffset || $doc.scrollTop) - ($doc.clientTop || 0);
+        outp.left += getScrollPosition(true) - ($doc.clientLeft || 0);
+        outp.top += getScrollPosition() - ($doc.clientTop || 0);
     }
 
     return outp;
@@ -161,8 +163,8 @@ function getTransformedSnapshot($elm: HTMLElement): Snapshot {
     const boundingRect = $elm.getBoundingClientRect();
     const $doc = document.documentElement;
     const outp = {
-        left: Math.round(boundingRect.left) + (window.pageXOffset || $doc.scrollLeft) - ($doc.clientLeft || 0),
-        top: Math.round(boundingRect.top) + (window.pageYOffset || $doc.scrollTop) - ($doc.clientTop || 0),
+        left: Math.round(boundingRect.left) + getScrollPosition(true) - ($doc.clientLeft || 0),
+        top: Math.round(boundingRect.top) + getScrollPosition() - ($doc.clientTop || 0),
         width: Math.round(boundingRect.width),
         height: Math.round(boundingRect.height)
     };

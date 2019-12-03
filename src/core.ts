@@ -4,13 +4,14 @@ import {
     isValidImage,
     getSrcFromImage,
     getHighResFromImage,
-    generateLightboxImg
+    generateLightboxImg,
+    getScrollPosition
 } from "./dom";
 import FLIPElement from "./flip";
 import "./style.css";
 
 export const DEFAULT_OPTS: GlobalOptions = {
-    scrollAllowance: 40,
+    scrollAllowance: 128,
     wrapAlbums: false,
     duration: 500,
     container: undefined,
@@ -22,9 +23,15 @@ export class MediumLightboxCore {
         ...DEFAULT_OPTS,
     };
     state: STATES = STATES.Closed;
-    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLImageElement, $highRes?: HTMLImageElement, origSrc?: string, options: ImageOptions } = undefined;
+    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLImageElement, $highRes?: HTMLImageElement, scrollPos: number, origSrc?: string, options: ImageOptions } = undefined;
     _flip?: FLIPElement;
     _openTime?: number;
+
+    _raf: boolean = false;
+
+    constructor() {
+        this._onScroll = this._onScroll.bind(this);
+    }
 
     /** Set options used by every lightbox */
     setOptions(newOpts: Partial<GlobalOptions>) {
@@ -59,7 +66,14 @@ export class MediumLightboxCore {
         $img.classList.add(Classes.ORIGINAL_OPEN);
         const $lightbox = this.options.lightboxGenerator($copiedImg, options);
         $lightbox.addEventListener("click", () => this.close());
-        this.active = { $lightbox, $img, $copiedImg, origSrc, options };
+        this.active = {
+            $lightbox,
+            $img,
+            $copiedImg,
+            origSrc,
+            options,
+            scrollPos: getScrollPosition()
+        };
         this._openTime = Date.now();
 
         // start loading the highres version if we have one
@@ -83,7 +97,7 @@ export class MediumLightboxCore {
 
         // then insert and animate it
         document.body.appendChild($lightbox);
-        $lightbox.style.top = `${window.scrollY || document.body.scrollTop || document.documentElement.scrollTop || 0}px`;
+        $lightbox.style.top = `${this.active.scrollPos}px`;
         const $animElm = $copiedImg.parentElement || $copiedImg;
         if (options.duration > 0) {
             this._flip = new FLIPElement($img);
@@ -93,6 +107,8 @@ export class MediumLightboxCore {
                 .play(options.duration);
         }
         this.state = STATES.Open;
+
+        window.addEventListener("scroll", this._onScroll);
 
         return $lightbox;
     }
@@ -132,6 +148,8 @@ export class MediumLightboxCore {
         if (!this.active) { return; }
         if ($img && this.active.$img !== $img) { return; }
         if (!$img) { $img = this.active.$img; }
+
+        window.removeEventListener("scroll", this._onScroll);
 
         this.state = STATES.Closing;
         const active = this.active; // we store this for later in case .active is updated while we're animating the close
@@ -176,6 +194,27 @@ export class MediumLightboxCore {
             $img.addEventListener("click", () => this.open($img, imgOpts));
             $img.classList.add(Classes.ORIGINAL);
         });
+    }
+
+    /** Helper function used as scroll listener. Debounces calls to .onScroll */
+    _onScroll(): void {
+        if (this._raf) { return; }
+        this._raf = true;
+        setTimeout(() => {
+            this._raf = false;
+            this.onScroll();
+        }, 60);
+    }
+    onScroll(): void {
+        if (!this.active) { return; }
+        if (this.active.options.scrollAllowance === undefined || this.active.options.scrollAllowance < 0) { return; }
+        const scrollAllowance = this.active.options.scrollAllowance;
+        const scrollPos = getScrollPosition();
+        const delta = Math.abs(this.active.scrollPos - scrollPos);
+
+        if (delta > scrollAllowance) {
+            this.close();
+        }
     }
 }
 
