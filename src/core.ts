@@ -52,9 +52,9 @@ export class MediumLightboxCore {
         const hasSrcSet = ($img instanceof HTMLPictureElement) || $img.srcset;
 
         // if we weren't explicitly given a highres, try to extract one from the image
-        if (!options.highRes && hasSrcSet) {
+        if (!options.highres && hasSrcSet) {
             const highRes = getHighResFromImage($img);
-            options.highRes = highRes;
+            options.highres = highRes;
         }
 
         // generate our lightbox
@@ -77,7 +77,7 @@ export class MediumLightboxCore {
         this._openTime = Date.now();
 
         // start loading the highres version if we have one
-        if (options.highRes) {
+        if (options.highres) {
             const $highRes = new Image();
             $highRes.decoding = "async";
             $highRes.addEventListener("load", async () => {
@@ -91,7 +91,7 @@ export class MediumLightboxCore {
                     $loader.parentNode.removeChild($loader);
                 }
             });
-            $highRes.src = options.highRes;
+            $highRes.src = options.highres;
             $highRes.classList.add(Classes.HIGHRES);
         }
 
@@ -176,6 +176,22 @@ export class MediumLightboxCore {
         }
     }
 
+    /** Parses options from a DOM element */
+    optsFromElm($elm: HTMLElement) {
+        const outp: ImageOptions = {};
+
+        if ($elm.dataset.highres) { outp.highres = $elm.dataset.highres; }
+        if ($elm.dataset.caption) { outp.caption = $elm.dataset.caption; }
+        if ($elm.dataset.duration && !Number.isNaN(+$elm.dataset.duration)) {
+            outp.duration = +$elm.dataset.duration;
+        }
+        if ($elm.dataset.scrollAllowance && !Number.isNaN(+$elm.dataset.scrollAllowance)) {
+            outp.scrollAllowance = +$elm.dataset.scrollAllowance;
+        }
+
+        return outp;
+    }
+
     /** Binds an image (or multiple), such that clicking it will open it
      * @param $imgs The image(s) to bind. If this is a string, it's used as a selector. */
     bind($imgs: HTMLElement | HTMLElement[] | string, opts?: ImageOptions): void {
@@ -187,11 +203,11 @@ export class MediumLightboxCore {
         }
 
         $imgs.forEach($img => {
-            const imgOpts = Object.assign({}, opts || {});
-            if (!imgOpts.highRes && $img.dataset.highres) {
-                imgOpts.highRes = $img.dataset.highres;
-            }
-            $img.addEventListener("click", () => this.open($img, imgOpts));
+            $img.addEventListener("click", () => {
+                // we extract options from the DOM here so that developers can change the data attributes and have it reflected
+                const imgOpts = Object.assign({}, opts || {}, this.optsFromElm($img));
+                this.open($img, imgOpts);
+            });
             $img.classList.add(Classes.ORIGINAL);
         });
     }
