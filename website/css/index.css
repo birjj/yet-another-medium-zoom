@@ -149,3 +149,28 @@ h1 + small {
     font-size: 20px;
     font-weight: 400;
 }
+
+/* mobile */
+@media (max-width: 950px) {
+    body {
+        padding: 3em 0;
+        --gutter: 1em;
+    }
+    .wrapper {
+        box-sizing: border-box;
+        padding: 0 1em;
+        width: 100%;
+    }
+    .wrapper > p {
+        box-sizing: border-box;
+        padding-left: var(--gutter);
+        padding-right: var(--gutter);
+    }
+
+    .custom__left {
+        padding-right: 0;
+    }
+    .custom__right {
+        padding-left: 0;
+    }
+}
