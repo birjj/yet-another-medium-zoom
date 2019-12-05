@@ -109,3 +109,8 @@ h1 + small {
 .img-grid > *:nth-child(2n) {
     margin-right: 0;
 }
+
+/* yamz */
+.yamz__caption {
+    font-family: "Questrial", sans-serif;
+}

@@ -6,8 +6,8 @@
         <title>Yet Another Medium Zoom</title>
 
         <link href="https://fonts.googleapis.com/css?family=Questrial:400,700|Lora:400&display=swap" rel="stylesheet">
-        <link href="css/index.css" rel="stylesheet" />
         <script src="js/index.ts" defer></script>
+        <link href="css/index.css" rel="stylesheet" />
     </head>
     <body>
         <div class="wrapper">
@@ -35,8 +35,15 @@
             <p>Should you wish to have more control over how the lightbox is displayed, you can style it with CSS or completely replace the DOM structure - the animation will adapt automatically.</p>
 
             <div class="img-grid">
-                <img src="resources/asgeir-pall-juliusson--90kxRqKSmc.jpg" />
-                <img src="resources/jason-leung-oCyVkyV3nBw_450.jpg" data-highres="resources/jason-leung-oCyVkyV3nBw.jpg" />
+                <img
+                    src="resources/asgeir-pall-juliusson--90kxRqKSmc.jpg"
+                    data-unsplash-link="https://unsplash.com/photos/-90kxRqKSmc"
+                    data-unsplash-author="@asgeir" />
+                <img
+                    src="resources/jason-leung-oCyVkyV3nBw_450.jpg"
+                    data-highres="resources/jason-leung-oCyVkyV3nBw.jpg"
+                    data-unsplash-link="https://unsplash.com/photos/oCyVkyV3nBw"
+                    data-unsplash-author="@ninjason" />
                 <img
                     srcset="resources/pascal-meier-tXpD84c8ZwI_450.jpg 450w,
                         resources/pascal-meier-tXpD84c8ZwI_900.jpg 900w,
@@ -44,16 +51,18 @@
                         resources/pascal-meier-tXpD84c8ZwI.jpg 6588w"
                     sizes="(max-width:950px) 50vw,
                         450px"
-                    src="resources/pascal-meier-tXpD84c8ZwI_450.jpg" />
-                <picture>
+                    src="resources/pascal-meier-tXpD84c8ZwI_450.jpg"
+                    data-unsplash-link="https://unsplash.com/photos/tXpD84c8ZwI"
+                    data-unsplash-author="@zhpix" />
+                <picture data-unsplash-link="https://unsplash.com/photos/3i5kX5lVDV0" data-unsplash-author="@dnevozhai">
                     <source
-                        srcset="resources/denys-nevozhai-3i5kX5LVDV0_450.jpg 450w,
-                        resources/denys-nevozhai-3i5kX5LVDV0_900.jpg 900w,
-                        resources/denys-nevozhai-3i5kX5LVDV0_1920.jpg 1920w,
-                        resources/denys-nevozhai-3i5kX5LVDV0.jpg 5464w"
+                        srcset="resources/denys-nevozhai-3i5kX5lVDV0_450.jpg 450w,
+                        resources/denys-nevozhai-3i5kX5lVDV0_900.jpg 900w,
+                        resources/denys-nevozhai-3i5kX5lVDV0_1920.jpg 1920w,
+                        resources/denys-nevozhai-3i5kX5lVDV0.jpg 5464w"
                         sizes="(max-width:950px) 50vw,
                             450px">
-                    <img src="resources/denys-nevozhai-3i5kX5LVDV0_450.jpg" />
+                    <img src="resources/denys-nevozhai-3i5kX5lVDV0_450.jpg" />
                 </picture>
             </div>
         </div>
