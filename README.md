@@ -48,7 +48,7 @@ The following options are available:
 | `lightboxGenerator` | `(img: HTMLElement, opts: ImageOptions) => HTMLElement` |          `null` | Function which generates the lightbox, if you want to use a custom one. See [below](#advanced-customization) for more information |
 | `class`             | `string`                                                |          `null` | Class to give to the lightbox element. Mostly useful for styling                                                                  |
 | `highres`           | `string`                                                |          `null` | URL of the high-res image to load. Can't be set globally                                                                          |
-| `caption`           | `string | HTMLElement`                                  |          `null` | String or element to insert as a caption below the image. Can't be set globally                                                   |
+| `caption`           | `string \| HTMLElement`                                  |          `null` | String or element to insert as a caption below the image. Can't be set globally                                                   |
 
 ### Customization
 
