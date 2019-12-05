@@ -64,7 +64,7 @@ export class MediumLightboxCore {
         $copiedImg.classList.add(Classes.IMG);
         $copiedImg.classList.remove(Classes.ORIGINAL);
         $img.classList.add(Classes.ORIGINAL_OPEN);
-        const $lightbox = this.options.lightboxGenerator($copiedImg, options);
+        const $lightbox = this.generateLightbox($copiedImg, options, $img);
         $lightbox.addEventListener("click", () => this.close());
         this.active = {
             $lightbox,
@@ -114,6 +114,11 @@ export class MediumLightboxCore {
         window.addEventListener("scroll", this._onScroll);
 
         return $lightbox;
+    }
+
+    /** Function for generating lightbox. Mostly its own method so plugins can overwrite it */
+    generateLightbox($copiedImg: HTMLImageElement, opts: GlobalOptions&ImageOptions, $original: HTMLElement) {
+        return opts.lightboxGenerator($copiedImg, opts);
     }
 
     /** Called when a high-res version of an image has loaded */
@@ -208,7 +213,7 @@ export class MediumLightboxCore {
         $imgs.forEach($img => {
             $img.addEventListener("click", () => {
                 // we extract options from the DOM here so that developers can change the data attributes and have it reflected
-                const imgOpts = Object.assign({}, opts || {}, this.optsFromElm($img));
+                const imgOpts = Object.assign({}, this.optsFromElm($img), opts || {});
                 this.open($img, imgOpts);
             });
             $img.classList.add(Classes.ORIGINAL);

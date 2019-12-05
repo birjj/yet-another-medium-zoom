@@ -27,6 +27,7 @@ export enum Classes {
     HAS_HIGHRES = "yamz__wrapper--has-highres",
     HIGHRES_LOADED = "yamz__wrapper--highres-loaded",
     CAPTION = "yamz__caption",
+    HAS_CAPTION = "yamz__wrapper--has-caption",
     ORIGINAL = "yamz__original",
     ORIGINAL_OPEN = "yamz__original--open",
     LOADER = "yamz__loader",

@@ -1,3 +1,4 @@
+/* original */
 .yamz__original {
     cursor: zoom-in;
 }
@@ -5,6 +6,7 @@
     visibility: hidden;
 }
 
+/* wrapper */
 .yamz__wrapper {
     position: absolute;
     left: 0;
@@ -14,8 +16,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 
     z-index: 999;
+    font-size: 16px;
     cursor: zoom-out;
 }
 .yamz__wrapper::before {
@@ -50,6 +54,7 @@
     }
 }
 
+/* img */
 .yamz__img-wrapper {
     margin: 32px;
     display: inline-block;
@@ -101,6 +106,7 @@
     margin: 0 auto;
 }
 
+/* loader */
 .yamz__loader {
     position: absolute;
     left: 0;
@@ -134,4 +140,22 @@
         transform: translate(-50%, -50%) scale(1);
         opacity: 0;
     }
+}
+
+/* caption */
+.yamz__wrapper--has-caption .yamz__img-wrapper {
+    margin-bottom: 0;
+}
+.yamz__wrapper--has-caption .yamz__img-wrapper > img {
+    max-height: calc(100vh - 64px - 2em);
+}
+.yamz__caption {
+    color: #fff;
+    margin: 1em 32px;
+    height: 1em;
+
+    animation: yamz-fade-in 0.2s ease-out 0.1s both;
+}
+.yamz__wrapper--closing .yamz__caption {
+    opacity: 0 !important;
 }

@@ -100,7 +100,7 @@ export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) 
         } else {
             $caption.textContent = opts.caption;
         }
-        $wrapper.classList.add(Classes.WRAPPER + "--has-caption");
+        $wrapper.classList.add(Classes.HAS_CAPTION);
         $wrapper.appendChild($caption);
     }
 
