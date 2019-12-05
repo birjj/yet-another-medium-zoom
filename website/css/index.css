@@ -111,10 +111,41 @@ h1 + small {
 }
 
 /* yamz */
-.yamz__caption {
+.yamz__wrapper {
     font-family: "Questrial", sans-serif;
 }
-
 .yamz__wrapper.yamz__wrapper--pink::before {
     background: rgba(92, 0, 92, 0.95);
+}
+.yamz__wrapper.custom {
+    flex-direction: row;
+}
+.custom__left,
+.custom__right {
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px;
+}
+.custom__left {
+    align-items: flex-end;
+}
+.custom__right {
+    max-width: calc(60ch + 64px);
+}
+.custom .yamz__img-wrapper {
+    margin: 0;
+}
+.custom .yamz__img-wrapper > img {
+    max-width: calc(50vw - 64px);
+}
+.custom .yamz__caption {
+    max-width: 50ch;
+    height: auto;
+}
+.custom .yamz__caption p {
+    font-size: 20px;
+    font-weight: 400;
 }
