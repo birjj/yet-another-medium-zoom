@@ -82,6 +82,9 @@ export function getScrollPosition(horizontal: boolean = false): number {
 export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) {
     const $wrapper = document.createElement("aside");
     $wrapper.classList.add(Classes.WRAPPER);
+    if (opts.class) {
+        $wrapper.classList.add(opts.class);
+    }
 
     const $imgWrapper = document.createElement("div");
     $imgWrapper.classList.add(Classes.IMG_WRAPPER);
@@ -102,7 +105,7 @@ export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) 
     }
 
     // add loading UI if we're going to load a highres
-    if (opts.highRes) {
+    if (opts.highres) {
         $wrapper.classList.add(Classes.HAS_HIGHRES);
         const $loader = document.createElement("div");
         $loader.classList.add(Classes.LOADER);

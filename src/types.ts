@@ -10,6 +10,7 @@ export interface ImageOptions extends Partial<GlobalOptions> {
     album?: AlbumEntry[],
     highres?: string,
     caption?: string | HTMLElement,
+    class?: string,
 }
 
 export interface AlbumEntry {
