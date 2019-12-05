@@ -20,6 +20,7 @@
 
     z-index: 999;
     font-size: 16px;
+    color: #fff;
     cursor: zoom-out;
 }
 .yamz__wrapper::before {
@@ -31,7 +32,7 @@
     bottom: 0;
     z-index: -1;
 
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.95);
     animation: yamz-fade-in 0.2s ease-out both;
 }
 .yamz__wrapper--closing::before {
@@ -150,7 +151,6 @@
     max-height: calc(100vh - 64px - 2em);
 }
 .yamz__caption {
-    color: #fff;
     margin: 1em 32px;
     height: 1em;
 

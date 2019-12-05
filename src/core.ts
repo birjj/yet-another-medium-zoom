@@ -241,6 +241,9 @@ export class MediumLightboxCore {
             this.close();
         }
     }
+
+    // re-export some stuff so it's easily available to plugins
+    defaultLightboxGenerator = defaultLightboxGenerator;
 }
 
 export default new MediumLightboxCore();
