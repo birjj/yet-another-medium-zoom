@@ -17,6 +17,7 @@
         "src"
     ],
     "author": "birjolaxew <johanringmann@gmail.com>",
+    "homepage": "https://yamz.jfagerberg.me/",
     "repository": {
         "type": "git",
         "url": "https://github.com/birjolaxew/yet-another-medium-zoom"
