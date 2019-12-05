@@ -78,10 +78,13 @@ export class MediumLightboxCore {
 
         // start loading the highres version if we have one
         if (options.highres) {
+            const active = this.active;
             const $highRes = new Image();
             $highRes.decoding = "async";
-            $highRes.addEventListener("load", async () => {
-                this._highResLoaded($highRes);
+            $highRes.addEventListener("load", () => {
+                if (this.active === active) {
+                    this._highResLoaded($highRes);
+                }
             });
             $highRes.addEventListener("error", e => {
                 console.error(`High-res image failed to load`, e);
