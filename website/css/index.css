@@ -11,6 +11,9 @@ body {
 a {
     color: inherit;
 }
+a:hover {
+    opacity: 0.65;
+}
 picture img {
     display: block;
 }
@@ -43,6 +46,12 @@ li {
     font-size: 36px;
     font-weight: 700;
     margin-bottom: 1.5em;
+}
+.title a {
+    text-decoration: none;
+}
+.title a:hover {
+    text-decoration: underline;
 }
 h1 {
     font-size: inherit;
@@ -112,6 +121,12 @@ h2 {
 .wrapper img {
     max-width: 100%;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+    height: 0.9em;
+    margin-right: 0.25ch;
+    transform: translateY(0.1em);
 }
 
 .img-grid {
