@@ -153,6 +153,7 @@
 .yamz__caption {
     margin: 1em 32px;
     height: 1em;
+    will-change: opacity;
 
     animation: yamz-fade-in 0.2s ease-out 0.1s both;
 }
