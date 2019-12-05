@@ -24,13 +24,13 @@ If you want to have more control over the lightbox, you may want to change some 
 ```js
 import yamz from "yet-another-medium-zoom";
 
-yamz.setOptions({
+yamz.setOptions({ // set options globally
     /* ... */
-}); // set options globally
+});
 const $img = document.querySelector("img");
-yamz.open($img, {
+yamz.open($img, { // set options on a per-image basis
     /* ... */
-}); // set options on a per-image basis
+});
 ```
 
 ```html
