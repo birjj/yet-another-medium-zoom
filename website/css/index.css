@@ -114,3 +114,7 @@ h1 + small {
 .yamz__caption {
     font-family: "Questrial", sans-serif;
 }
+
+.yamz__wrapper.yamz__wrapper--pink::before {
+    background: rgba(92, 0, 92, 0.95);
+}

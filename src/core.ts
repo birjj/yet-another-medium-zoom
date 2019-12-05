@@ -188,6 +188,7 @@ export class MediumLightboxCore {
     optsFromElm($elm: HTMLElement) {
         const outp: ImageOptions = {};
 
+        if ($elm.dataset.class) { outp.class = $elm.dataset.class; }
         if ($elm.dataset.highres) { outp.highres = $elm.dataset.highres; }
         if ($elm.dataset.caption) { outp.caption = $elm.dataset.caption; }
         if ($elm.dataset.duration && !Number.isNaN(+$elm.dataset.duration)) {
