@@ -1,18 +1,25 @@
 {
-    "name": "medium-lightbox",
-    "version": "0.0.0",
+    "name": "yet-another-medium-zoom",
+    "version": "0.1.0",
     "description": "Highly configurable medium-like lightbox",
-    "keywords": [],
-    "main": "dist/medium-lightbox.umd.js",
-    "module": "dist/medium-lightbox.es5.js",
-    "typings": "dist/types/medium-lightbox.d.ts",
+    "keywords": [
+        "lightbox",
+        "image",
+        "image zoom",
+        "picture",
+        "medium"
+    ],
+    "main": "dist/yet-another-medium-zoom.umd.js",
+    "module": "dist/yet-another-medium-zoom.es5.js",
+    "typings": "dist/types/core.d.ts",
     "files": [
-        "dist"
+        "dist",
+        "src"
     ],
     "author": "birjolaxew <johanringmann@gmail.com>",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/birjolaxew/yet-another-medium-zoom"
     },
     "license": "MIT",
     "engines": {
@@ -21,7 +28,7 @@
     "scripts": {
         "lint": "tslint --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
         "prebuild": "rimraf dist",
-        "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
+        "build": "tsc --module commonjs && rollup -c rollup.config.ts",
         "start": "rollup -c rollup.config.ts -w",
         "test": "jest --coverage",
         "test:watch": "jest --coverage --watch",

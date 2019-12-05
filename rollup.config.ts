@@ -5,12 +5,10 @@ import typescript from "rollup-plugin-typescript2";
 import json from "rollup-plugin-json";
 import postcss from "rollup-plugin-postcss";
 
-const pkg = require("./package.json")
-
-const libraryName = "yet-another-medium-zoom"
+const pkg = require("./package.json");
 
 export default {
-  input: `src/${libraryName}.ts`,
+  input: `src/core.ts`,
   output: [
     { file: pkg.main, name: "yamz", format: "umd", sourcemap: true },
     { file: pkg.module, format: "es", sourcemap: true },
