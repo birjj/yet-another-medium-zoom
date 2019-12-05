@@ -1,50 +1,57 @@
 # Yet Another Medium Zoom
 
-Extensible and configurable Medium-inspired lightbox.
+YAMZ is a lightbox library heavily inspired by [Medium](https://medium.com/).
 
-## Expected API
+It provides an easy way to add smooth, minimalistic, and highly customizable Medium-like zooming to your images.
 
-### Options
+## Usage
 
-Global options (`GlobalOptions`):
+To use the library, you have to tell it which images to bind to:
 
-| Key                 | Type                                                    |   Default value | Description                                                                                             |
-| ------------------- | ------------------------------------------------------- | --------------: | ------------------------------------------------------------------------------------------------------- |
-| `scrollAllowance`   | `number`                                                |            `40` | How much the user can scroll before the lightbox is closed. `-1` to disable.                            |
-| `wrapAlbums`        | `boolean`                                               |         `false` | Whether the album should wrap. If `false`, the user will be unable to go right at the end of the album. |
-| `duration`          | `number`                                                |           `400` | How long the animation should take, measured in milliseconds                                            |
-| `container`         | `HTMLElement`                                           | `document.body` | The element to render the lightbox inside.                                                              |
-| `lightboxGenerator` | `(img: HTMLElement, opts: ImageOptions) => HTMLElement` |          `null` | Function which generates the ligthbox, if you want to use a custom one.                                 |
+```js
+import yamz from "yet-another-medium-zoom";
 
-Individual image options (`ImageOptions`) is every global option plus the following:
+const $images = [...document.querySelectorAll("img, picture")];
+yamz.bind($images);
+```
 
-| Key       | Type                                          | Default value | Description                                                                                                           |
-| --------- | --------------------------------------------- | ------------: | --------------------------------------------------------------------------------------------------------------------- |
-| `album`   | `{ img: HTMLElement, opts?: ImageOptions }[]` |        `null` | The images the user can move through by pressing left/right. Left/right is disabled if this is `null` or empty array. |
-| `highRes` | `string | HTMLElement`                        |        `null` | URL of the high-res version to display when zoomed in, or an element if you already have one.                         |
-| `caption` | `string | HTMLElement`                        |        `null` | The element to render the lightbox inside. Caption is disabled if this is `null` or empty string.                     |
+That's it. The library will automatically extract the appropriate high-res source from your images if you are using `srcset`, and will otherwise just use the image's own source.
 
-### API
+### Configuration
 
-#### `setOptions(options: GlobalOptions)`
+If you want to have more control over the lightbox, you may want to change some of the options. You can set an option globally, or you can specify the options on a per-image basis. This can be done using either a JS API, or through data attributes in your HTML.
 
-Sets the options to be used globally.
+```js
+import yamz from "yet-another-medium-zoom";
 
-#### `open(img: HTMLElement, options?: ImageOptions): Promise<HTMLElement>`
+yamz.setOptions({
+    /* ... */
+}); // set options globally
+const $img = document.querySelector("img");
+yamz.open($img, {
+    /* ... */
+}); // set options on a per-image basis
+```
 
-Opens the specified image in the lightbox.  
-The returned promise will resolve once the lightbox has finished opening, resolving to the lightbox element.
+```html
+<!-- or set the options as data attributes -->
+<img src="example.png" data-scroll-allowance="-1" data-duration="600" />
+```
 
-#### `close(img?: HTMLElement): Promise<void>` (core)
+The following options are available:
 
-Closes the currently active lightbox. If `img` is given, only closes if the currently open image is equal to `img`.  
-The returned promise will resolve once the lightbox has finished closing.
+| Key                 | Type                                                    |   Default value | Description                                                                                                                       |
+| ------------------- | ------------------------------------------------------- | --------------: | --------------------------------------------------------------------------------------------------------------------------------- |
+| `scrollAllowance`   | `number`                                                |           `128` | How much the user can scroll before the lightbox is closed. `-1` to disable                                                       |
+| `duration`          | `number`                                                |           `300` | How long the animation should take, measured in milliseconds                                                                      |
+| `container`         | `HTMLElement`                                           | `document.body` | The element to render the lightbox inside                                                                                         |
+| `lightboxGenerator` | `(img: HTMLElement, opts: ImageOptions) => HTMLElement` |          `null` | Function which generates the lightbox, if you want to use a custom one. See [below](#advanced-customization) for more information |
+| `class`             | `string`                                                |          `null` | Class to give to the lightbox element. Mostly useful for styling                                                                  |
+| `highres`           | `string`                                                |          `null` | URL of the high-res image to load. Can't be set globally                                                                          |
+| `caption`           | `string | HTMLElement`                                  |          `null` | String or element to insert as a caption below the image. Can't be set globally                                                   |
 
-#### `update(img: HTMLElement, options?: ImageOptions): HTMLElement` (core)
+### Customization
 
-Updates the lightbox to show the given image instead, without animating a close/open.  
-The returned element is the lightbox.
+If you wish to customize the look and feel of the lightbox, you're free to do so using CSS and the `lightboxGenerator` option - the former is for changing the look of the lightbox, while the latter allows you to completely change the structure of the lightbox, adding features and modifying the layout as you see fit. The animation will automatically adapt to your new styles.
 
-### Styling
-
-If you want to change some part of the styling, you can do so through simple CSS. The animations will adapt to your changed style automatically.
+If you want an example of how this looks, have a look at [the example website](website/).
