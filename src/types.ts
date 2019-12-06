@@ -3,13 +3,12 @@ export interface GlobalOptions {
     wrapAlbums: boolean,
     duration: number,
     container?: HTMLElement,
-    lightboxGenerator: ($img: HTMLElement, opts: ImageOptions) => HTMLElement,
+    lightboxGenerator?: ($img: HTMLElement, opts: ImageOptions, $original: HTMLElement) => HTMLElement,
 };
 
 export interface ImageOptions extends Partial<GlobalOptions> {
     album?: AlbumEntry[],
     highres?: string,
-    caption?: string | HTMLElement,
     class?: string,
 }
 

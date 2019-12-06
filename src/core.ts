@@ -15,7 +15,7 @@ export const DEFAULT_OPTS: GlobalOptions = {
     wrapAlbums: false,
     duration: 300,
     container: undefined,
-    lightboxGenerator: defaultLightboxGenerator,
+    lightboxGenerator: undefined,
 };
 
 export class MediumLightboxCore {
@@ -118,7 +118,8 @@ export class MediumLightboxCore {
 
     /** Function for generating lightbox. Mostly its own method so plugins can overwrite it */
     generateLightbox($copiedImg: HTMLImageElement, opts: GlobalOptions&ImageOptions, $original: HTMLElement) {
-        return opts.lightboxGenerator($copiedImg, opts);
+        const generator = opts.lightboxGenerator || this.defaultLightboxGenerator;
+        return generator($copiedImg, opts, $original);
     }
 
     /** Called when a high-res version of an image has loaded */
@@ -190,7 +191,6 @@ export class MediumLightboxCore {
 
         if ($elm.dataset.class) { outp.class = $elm.dataset.class; }
         if ($elm.dataset.highres) { outp.highres = $elm.dataset.highres; }
-        if ($elm.dataset.caption) { outp.caption = $elm.dataset.caption; }
         if ($elm.dataset.duration && !Number.isNaN(+$elm.dataset.duration)) {
             outp.duration = +$elm.dataset.duration;
         }

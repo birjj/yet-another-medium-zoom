@@ -1,7 +1,8 @@
-import lightbox from "../../src/core";
+import lightbox from "../../src/index";
 import { ImageOptions } from "../../src/types";
+import { CaptionOptions } from "../../src/caption/caption";
 
-function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions) {
+function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions, $original: HTMLElement) {
     const $lightbox = lightbox.defaultLightboxGenerator($img, opts);
     $lightbox.classList.add("custom");
 
@@ -16,8 +17,10 @@ function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions) {
     $description.appendChild(document.createElement("br"));
     $description.appendChild(document.createTextNode("The animation automatically adapts so it matches the new location of the image."));
     const $caption = $lightbox.querySelector(".yamz__caption");
-    $caption.insertBefore($description, $caption.firstChild);
-    $right.appendChild($caption);
+    if ($caption) {
+        $caption.insertBefore($description, $caption.firstChild);
+        $right.appendChild($caption);
+    }
 
     $lightbox.appendChild($left);
     $lightbox.appendChild($right);
@@ -27,7 +30,7 @@ function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions) {
 
 const $imgs = Array.from(document.querySelectorAll("*:not(picture) > img, picture")) as HTMLElement[];
 $imgs.forEach($img => {
-    const opts: ImageOptions = {};
+    const opts: CaptionOptions = {};
 
     // if we want to insert a link in our caption, we need to give YAMZ an HTMLElement instead of a string
     if ($img.dataset.unsplashLink && $img.dataset.unsplashAuthor) {

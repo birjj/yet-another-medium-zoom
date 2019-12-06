@@ -91,19 +91,6 @@ export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) 
     $imgWrapper.appendChild($img);
     $wrapper.appendChild($imgWrapper);
 
-    // add caption if given
-    if (opts.caption) {
-        const $caption = document.createElement("div");
-        $caption.classList.add(Classes.CAPTION);
-        if (opts.caption instanceof HTMLElement) {
-            $caption.appendChild(opts.caption);
-        } else {
-            $caption.textContent = opts.caption;
-        }
-        $wrapper.classList.add(Classes.HAS_CAPTION);
-        $wrapper.appendChild($caption);
-    }
-
     // add loading UI if we're going to load a highres
     if (opts.highres) {
         $wrapper.classList.add(Classes.HAS_HIGHRES);
