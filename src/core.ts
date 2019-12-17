@@ -1,4 +1,4 @@
-import { AlbumEntry, ImageOptions, GlobalOptions, Classes, STATES } from "./types";
+import { ImageOptions, GlobalOptions, Classes, STATES } from "./types";
 import {
     defaultLightboxGenerator,
     isValidImage,
@@ -12,7 +12,6 @@ import "./style.css";
 
 export const DEFAULT_OPTS: GlobalOptions = {
     scrollAllowance: 128,
-    wrapAlbums: false,
     duration: 300,
     container: undefined,
     lightboxGenerator: undefined,
@@ -25,7 +24,6 @@ export class MediumLightboxCore {
     state: STATES = STATES.Closed;
     active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLImageElement, $highRes?: HTMLImageElement, scrollPos: number, origSrc?: string, options: ImageOptions } = undefined;
     _flip?: FLIPElement;
-    _openTime?: number;
 
     _raf: boolean = false;
 
@@ -59,49 +57,16 @@ export class MediumLightboxCore {
 
         // generate our lightbox
         this.state = STATES.Opening;
-        const origSrc = getSrcFromImage($img);
-        const $copiedImg = generateLightboxImg($img);
-        $copiedImg.classList.add(Classes.IMG);
-        $copiedImg.classList.remove(Classes.ORIGINAL);
-        $img.classList.add(Classes.ORIGINAL_OPEN);
-        const $lightbox = this.generateLightbox($copiedImg, options, $img);
-        $lightbox.addEventListener("click", () => this.close());
         this.active = {
-            $lightbox,
-            $img,
-            $copiedImg,
-            origSrc,
+            ...this.generateLightbox($img, options),
             options,
             scrollPos: getScrollPosition()
         };
-        this._openTime = Date.now();
-
-        // start loading the highres version if we have one
-        if (options.highres) {
-            const active = this.active;
-            const $highRes = new Image();
-            $highRes.decoding = "async";
-            $highRes.addEventListener("load", () => {
-                if (this.active === active) {
-                    this._highResLoaded($highRes);
-                }
-            });
-            $highRes.addEventListener("error", e => {
-                console.error(`High-res image failed to load`, e);
-                $lightbox.classList.remove(Classes.HAS_HIGHRES);
-                const $loader = $lightbox.querySelector(`.${Classes.LOADER}`);
-                if ($loader && $loader.parentNode) {
-                    $loader.parentNode.removeChild($loader);
-                }
-            });
-            $highRes.src = options.highres;
-            $highRes.classList.add(Classes.HIGHRES);
-        }
 
         // then insert and animate it
-        (options.container || document.body).appendChild($lightbox);
-        $lightbox.style.top = `${this.active.scrollPos}px`;
-        const $animElm = $copiedImg.parentElement || $copiedImg;
+        (options.container || document.body).appendChild(this.active.$lightbox);
+        this.active.$lightbox.style.top = `${this.active.scrollPos}px`;
+        const $animElm = this.active.$copiedImg.parentElement || this.active.$copiedImg;
         if (options.duration > 0) {
             this._flip = new FLIPElement($img);
             await this._flip.first($img)
@@ -113,43 +78,7 @@ export class MediumLightboxCore {
 
         window.addEventListener("scroll", this._onScroll);
 
-        return $lightbox;
-    }
-
-    /** Function for generating lightbox. Mostly its own method so plugins can overwrite it */
-    generateLightbox($copiedImg: HTMLImageElement, opts: GlobalOptions&ImageOptions, $original: HTMLElement) {
-        const generator = opts.lightboxGenerator || this.defaultLightboxGenerator;
-        return generator($copiedImg, opts, $original);
-    }
-
-    /** Called when a high-res version of an image has loaded */
-    _highResLoaded($highRes: HTMLImageElement) {
-        if (!this.active) { return; }
-        const $copiedImg = this.active.$copiedImg;
-        const $animElm = $copiedImg.parentElement || $copiedImg;
-
-        // function that inserts the highres, resizing the img wrapper to the size of the highres
-        const updater = () => {
-            if (!this.active) { return; }
-            if ($copiedImg.parentElement) {
-                this.active.$highRes = $highRes;
-                this.active.$lightbox.classList.add(Classes.HIGHRES_LOADED);
-                $copiedImg.parentElement.insertBefore($highRes, $copiedImg.parentElement.firstChild);
-            }
-        };
-
-        if (this.state === STATES.Opening && this._flip) {
-            this._flip.update($animElm, updater, this.active.options.duration);
-        } else if (this.state === STATES.Open && this.active) {
-            this._flip = new FLIPElement(this.active.$img);
-            this._flip.first(this.active.$copiedImg);
-            updater();
-            this._flip.last(this.active.$copiedImg)
-                .invert($animElm)
-                .play(this.active.options.duration);
-        } else {
-            updater();
-        }
+        return this.active.$lightbox;
     }
 
     /** Close the currently active image. If img is given, only closes if that's the currently active img */
@@ -182,6 +111,85 @@ export class MediumLightboxCore {
 
         if (this.active === active) {
             this.active = undefined;
+        }
+    }
+
+    /**
+     * Function for generating lightbox for a given image.
+     * This also handles loading the highres and stuff.
+     * If you're only looking for generating the DOM (e.g. if you're creating a custom lightbox generator), use .defaultLightboxGenerator
+     */
+    generateLightbox($img: HTMLElement, opts: GlobalOptions&ImageOptions): { $img: HTMLElement, $copiedImg: HTMLImageElement, $lightbox: HTMLElement, origSrc: string } {
+        const generator = opts.lightboxGenerator || this.defaultLightboxGenerator;
+        const origSrc = getSrcFromImage($img);
+
+        // generate the DOM
+        const $copiedImg = generateLightboxImg($img);
+        $copiedImg.classList.add(Classes.IMG);
+        $copiedImg.classList.remove(Classes.ORIGINAL);
+        $img.classList.add(Classes.ORIGINAL_OPEN);
+        const $lightbox = generator.call(this, $copiedImg, opts, $img);
+
+        // add event listeners
+        $lightbox.addEventListener("click", () => this.close());
+
+        // and start loading high-res if we need to
+        // start loading the highres version if we have one
+        if (opts.highres) {
+            const $highRes = new Image();
+            $highRes.decoding = "async";
+            $highRes.addEventListener("load", () => {
+                if (this.active && this.active.$img === $img) {
+                    this._highResLoaded($highRes);
+                }
+            });
+            $highRes.addEventListener("error", e => {
+                console.error(`High-res image failed to load`, e);
+                $lightbox.classList.remove(Classes.HAS_HIGHRES);
+                const $loader = $lightbox.querySelector(`.${Classes.LOADER}`);
+                if ($loader && $loader.parentNode) {
+                    $loader.parentNode.removeChild($loader);
+                }
+            });
+            $highRes.src = opts.highres;
+            $highRes.classList.add(Classes.HIGHRES);
+        }
+
+        return {
+            $img,
+            $copiedImg,
+            $lightbox,
+            origSrc
+        };
+    }
+
+    /** Called when a high-res version of an image has loaded */
+    _highResLoaded($highRes: HTMLImageElement) {
+        if (!this.active) { return; }
+        const $copiedImg = this.active.$copiedImg;
+        const $animElm = $copiedImg.parentElement || $copiedImg;
+
+        // function that inserts the highres, resizing the img wrapper to the size of the highres
+        const updater = () => {
+            if (!this.active) { return; }
+            if ($copiedImg.parentElement) {
+                this.active.$highRes = $highRes;
+                this.active.$lightbox.classList.add(Classes.HIGHRES_LOADED);
+                $copiedImg.parentElement.insertBefore($highRes, $copiedImg.parentElement.firstChild);
+            }
+        };
+
+        if (this.state === STATES.Opening && this._flip) {
+            this._flip.update($animElm, updater, this.active.options.duration);
+        } else if (this.state === STATES.Open && this.active) {
+            this._flip = new FLIPElement(this.active.$img);
+            this._flip.first(this.active.$copiedImg);
+            updater();
+            this._flip.last(this.active.$copiedImg)
+                .invert($animElm)
+                .play(this.active.options.duration);
+        } else {
+            updater();
         }
     }
 
