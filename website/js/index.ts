@@ -3,7 +3,8 @@ import { ImageOptions } from "../../src/types";
 import { CaptionOptions } from "../../src/caption/caption";
 
 function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions, $original: HTMLElement) {
-    const $lightbox = lightbox.defaultLightboxGenerator($img, opts);
+    const $lightbox = lightbox.defaultLightboxGenerator($img, opts, $original);
+    if (!$original.dataset.customLayout) { return $lightbox; }
     $lightbox.classList.add("custom");
 
     const $left = document.createElement("div");
@@ -27,6 +28,7 @@ function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions, $or
 
     return $lightbox;
 }
+lightbox.setOptions({ lightboxGenerator: customLightboxGenerator });
 
 const $imgs = Array.from(document.querySelectorAll("*:not(picture) > img, picture")) as HTMLElement[];
 $imgs.forEach($img => {
@@ -50,11 +52,6 @@ $imgs.forEach($img => {
         $caption.appendChild($link);
 
         opts.caption = $caption;
-    }
-
-    // we might want to use a custom layout
-    if ($img.dataset.customLayout) {
-        opts.lightboxGenerator = customLightboxGenerator;
     }
 
     lightbox.bind($img, opts);

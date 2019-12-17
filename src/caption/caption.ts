@@ -11,8 +11,8 @@ export default function withCaption(yamz: MediumLightboxCore) {
     const { defaultLightboxGenerator, optsFromElm } = yamz;
 
     // insert caption into the lightbox if we're given one
-    yamz.defaultLightboxGenerator = function($copiedImg: HTMLElement, opts: CaptionOptions) {
-        const $lightbox = defaultLightboxGenerator($copiedImg, opts);
+    yamz.defaultLightboxGenerator = function($copiedImg: HTMLElement, opts: CaptionOptions, $original: HTMLElement) {
+        const $lightbox = defaultLightboxGenerator($copiedImg, opts, $original);
 
         // add caption if given
         if (opts.caption) {

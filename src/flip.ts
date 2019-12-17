@@ -114,7 +114,6 @@ export default class FLIPElement {
     }
 
     _onTransitionEnd(e: TransitionEvent) {
-        console.log("Transition ended");
         if (e.target === this._target$Elm && e.propertyName === "transform") {
             this.stop();
         }

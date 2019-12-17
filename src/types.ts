@@ -1,20 +1,17 @@
 export interface GlobalOptions {
     scrollAllowance: number,
-    wrapAlbums: boolean,
     duration: number,
     container?: HTMLElement,
     lightboxGenerator?: ($img: HTMLElement, opts: ImageOptions, $original: HTMLElement) => HTMLElement,
 };
 
 export interface ImageOptions extends Partial<GlobalOptions> {
-    album?: AlbumEntry[],
     highres?: string,
     class?: string,
-}
+};
 
-export interface AlbumEntry {
-    img: HTMLElement,
-    opts?: ImageOptions,
+export interface YamzElement extends HTMLElement {
+    yamzOpts?: ImageOptions
 };
 
 export enum Classes {
@@ -30,6 +27,8 @@ export enum Classes {
     ORIGINAL = "yamz__original",
     ORIGINAL_OPEN = "yamz__original--open",
     LOADER = "yamz__loader",
+    ALBUM_PREV = "yamz__album__prev",
+    ALBUM_NEXT = "yamz__album__next",
 };
 
 export enum STATES {

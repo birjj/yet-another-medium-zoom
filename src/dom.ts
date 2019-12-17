@@ -79,7 +79,7 @@ export function getScrollPosition(horizontal: boolean = false): number {
         : window.scrollY || document.body.scrollTop || document.documentElement.scrollTop || 0;
 }
 
-export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) {
+export function defaultLightboxGenerator($copiedImg: HTMLElement, opts: ImageOptions, $original: HTMLElement) {
     const $wrapper = document.createElement("aside");
     $wrapper.classList.add(Classes.WRAPPER);
     if (opts.class) {
@@ -88,7 +88,7 @@ export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) 
 
     const $imgWrapper = document.createElement("div");
     $imgWrapper.classList.add(Classes.IMG_WRAPPER);
-    $imgWrapper.appendChild($img);
+    $imgWrapper.appendChild($copiedImg);
     $wrapper.appendChild($imgWrapper);
 
     // add loading UI if we're going to load a highres
@@ -96,7 +96,7 @@ export function defaultLightboxGenerator($img: HTMLElement, opts: ImageOptions) 
         $wrapper.classList.add(Classes.HAS_HIGHRES);
         const $loader = document.createElement("div");
         $loader.classList.add(Classes.LOADER);
-        $imgWrapper.insertBefore($loader, $img);
+        $imgWrapper.insertBefore($loader, $copiedImg);
     }
 
     return $wrapper;

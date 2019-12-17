@@ -77,6 +77,7 @@ h2 {
 .wrapper p,
 .wrapper ul,
 .wrapper .subtitle {
+    box-sizing: border-box;
     max-width: 60ch;
     max-width: var(--width);
     width: 100%;
@@ -147,6 +148,9 @@ h2 {
 /* yamz */
 .yamz__wrapper {
     font-family: "Questrial", sans-serif;
+}
+.yamz__wrapper::before {
+    transition: background-color 0.4s;
 }
 .yamz__wrapper.yamz__wrapper--pink::before {
     background: rgba(92, 0, 92, 0.95);

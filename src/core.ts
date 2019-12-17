@@ -1,4 +1,4 @@
-import { ImageOptions, GlobalOptions, Classes, STATES } from "./types";
+import { ImageOptions, GlobalOptions, Classes, STATES, YamzElement } from "./types";
 import {
     defaultLightboxGenerator,
     isValidImage,
@@ -42,18 +42,11 @@ export class MediumLightboxCore {
     getOptions() { return this.options; }
 
     /** Open a specific image in the lightbox */
-    async open($img: HTMLElement, opts?: ImageOptions): Promise<HTMLElement> {
+    async open($img: YamzElement, opts?: ImageOptions): Promise<HTMLElement> {
         if (!isValidImage($img)) { throw new TypeError(`${$img} cannot be used as an image`); }
         if (this.active) { await this.close(); }
 
-        const options = Object.assign({}, this.options, opts || {});
-        const hasSrcSet = ($img instanceof HTMLPictureElement) || $img.srcset;
-
-        // if we weren't explicitly given a highres, try to extract one from the image
-        if (!options.highres && hasSrcSet) {
-            const highRes = getHighResFromImage($img);
-            options.highres = highRes;
-        }
+        const options = Object.assign({}, this.options, $img.yamzOpts || {}, opts || {});
 
         // generate our lightbox
         this.state = STATES.Opening;
@@ -82,7 +75,7 @@ export class MediumLightboxCore {
     }
 
     /** Close the currently active image. If img is given, only closes if that's the currently active img */
-    async close($img?: HTMLElement): Promise<void> {
+    async close($img?: YamzElement): Promise<void> {
         if (!this.active) { return; }
         if ($img && this.active.$img !== $img) { return; }
         if (!$img) { $img = this.active.$img; }
@@ -115,13 +108,74 @@ export class MediumLightboxCore {
     }
 
     /**
+     * Replaces the currently open lightbox with that of another image, without animating a close/open
+     */
+    replace($img: YamzElement, opts?: ImageOptions) {
+        if (!isValidImage($img)) { throw new TypeError(`${$img} cannot be used as an image`); }
+        if (!this.active) { return; }
+
+        // unhide the original image
+        this.active.$img.classList.remove(Classes.ORIGINAL_OPEN);
+
+        // then generate the new lightbox and set it as active
+        const $oldLightbox = this.active.$lightbox;
+        const nextOpts = Object.assign({}, this.options, $img.yamzOpts || {}, opts || {});
+        const nextActive = this.generateLightbox($img, nextOpts);
+        this.active = {
+            ...this.active,
+            ...nextActive,
+            $lightbox: $oldLightbox,
+            options: nextOpts
+        };
+
+        // then update the DOM
+        this.replaceLightboxDOM(nextActive.$lightbox, $oldLightbox);
+    }
+
+    /**
+     * Replaces the currently active lightbox DOM with the given one
+     * Mostly its own method so plugins can overwrite it
+     */
+    replaceLightboxDOM($newLightbox: HTMLElement, $oldLightbox?: HTMLElement) {
+        if (!$oldLightbox) {
+            $oldLightbox = this.active && this.active.$lightbox;
+        }
+        if (!$oldLightbox) { return; }
+
+        /**
+         * We replace the content of the lightbox instead of just replacing the element itself because the open
+         * animations (e.g. fade-in of background) are CSS animations, that would replay if a new lightbox was inserted
+         * TODO: consider whether this approach is better than having a CSS class that disables open animation
+         */
+
+        // replace the content of the current lightbox with that of the target lightbox
+        while ($oldLightbox.firstChild) {
+            $oldLightbox.removeChild($oldLightbox.firstChild);
+        }
+        const $children = Array.from($newLightbox.children);
+        for (let i = 0; i < $children.length; ++i) {
+            $oldLightbox.appendChild($children[i]);
+        }
+
+        // update the lightbox's attributes to match the new one
+        $oldLightbox.setAttribute("class", $newLightbox.className);
+    }
+
+    /**
      * Function for generating lightbox for a given image.
      * This also handles loading the highres and stuff.
      * If you're only looking for generating the DOM (e.g. if you're creating a custom lightbox generator), use .defaultLightboxGenerator
      */
-    generateLightbox($img: HTMLElement, opts: GlobalOptions&ImageOptions): { $img: HTMLElement, $copiedImg: HTMLImageElement, $lightbox: HTMLElement, origSrc: string } {
+    generateLightbox($img: HTMLPictureElement|HTMLImageElement, opts: GlobalOptions&ImageOptions): { $img: HTMLPictureElement|HTMLImageElement, $copiedImg: HTMLImageElement, $lightbox: HTMLElement, origSrc: string } {
         const generator = opts.lightboxGenerator || this.defaultLightboxGenerator;
         const origSrc = getSrcFromImage($img);
+        const hasSrcSet = ($img instanceof HTMLPictureElement) || $img.srcset;
+
+        // if we weren't explicitly given a highres, try to extract one from the image
+        if (!opts.highres && hasSrcSet) {
+            const highRes = getHighResFromImage($img);
+            opts.highres = highRes;
+        }
 
         // generate the DOM
         const $copiedImg = generateLightboxImg($img);
@@ -226,6 +280,11 @@ export class MediumLightboxCore {
                 this.open($img, imgOpts);
             });
             $img.classList.add(Classes.ORIGINAL);
+
+            // we store the custom opts given to us so we can later recreate the lightbox just from the element
+            if (opts) {
+                ($img as YamzElement).yamzOpts = opts;
+            }
         });
     }
 
