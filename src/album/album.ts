@@ -15,7 +15,8 @@ export interface AlbumEntry {
 };
 
 export interface MediumLightboxAlbumed extends MediumLightboxCore {
-    moveToAlbumEntry: (entry: AlbumEntry, direction: "next"|"prev") => void
+    moveToAlbumEntry: (entry: AlbumEntry, direction: "next"|"prev") => void,
+    setOptions: (options: Partial<GlobalOptions&AlbumOptions>) => void
 };
 
 /** Augments the YAMZ instance to support captions */

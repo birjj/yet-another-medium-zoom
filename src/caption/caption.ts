@@ -1,6 +1,10 @@
 import { MediumLightboxCore } from "../core";
-import { ImageOptions, Classes } from "../types";
+import { ImageOptions, Classes, GlobalOptions } from "../types";
 import "./caption.css";
+
+export interface MediumLightboxCaptioned extends MediumLightboxCore {
+    setOptions: (options: Partial<GlobalOptions&CaptionOptions>) => void
+};
 
 export interface CaptionOptions extends ImageOptions {
     caption?: string | HTMLElement,
@@ -12,7 +16,7 @@ export default function withCaption(yamz: MediumLightboxCore) {
 
     // insert caption into the lightbox if we're given one
     yamz.defaultLightboxGenerator = function($copiedImg: HTMLElement, opts: CaptionOptions, $original: HTMLElement) {
-        const $lightbox = defaultLightboxGenerator($copiedImg, opts, $original);
+        const $lightbox = defaultLightboxGenerator.call(this, $copiedImg, opts, $original);
 
         // add caption if given
         if (opts.caption) {
@@ -32,10 +36,10 @@ export default function withCaption(yamz: MediumLightboxCore) {
 
     // also allow specifying the caption in HTML
     yamz.optsFromElm = function($elm: HTMLElement) {
-        const outp: CaptionOptions = optsFromElm($elm);
+        const outp: CaptionOptions = optsFromElm.call(this, $elm);
         if ($elm.dataset.caption) { outp.caption = $elm.dataset.caption; }
         return outp;
     };
 
-    return yamz;
+    return yamz as MediumLightboxCaptioned;
 };
