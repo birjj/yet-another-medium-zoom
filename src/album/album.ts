@@ -19,7 +19,7 @@ export interface MediumLightboxAlbumed extends MediumLightboxCore {
     setOptions: (options: Partial<GlobalOptions&AlbumOptions>) => void
 };
 
-/** Augments the YAMZ instance to support captions */
+/** Augments the YAMZ instance to support albums */
 export default function withAlbum(yamz: PartialBy<MediumLightboxAlbumed, "moveToAlbumEntry">): MediumLightboxAlbumed {
     const { defaultLightboxGenerator, optsFromElm } = yamz;
 

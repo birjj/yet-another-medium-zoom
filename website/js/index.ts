@@ -28,7 +28,10 @@ function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions, $or
 
     return $lightbox;
 }
-lightbox.setOptions({ lightboxGenerator: customLightboxGenerator });
+lightbox.setOptions({
+    lightboxGenerator: customLightboxGenerator,
+    wrapAlbum: true,
+});
 
 const $imgs = Array.from(document.querySelectorAll("*:not(picture) > img, picture")) as HTMLElement[];
 $imgs.forEach($img => {
