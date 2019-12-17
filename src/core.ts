@@ -29,6 +29,7 @@ export class MediumLightboxCore {
 
     constructor() {
         this._onScroll = this._onScroll.bind(this);
+        this._onKeyDown = this._onKeyDown.bind(this);
     }
 
     /** Set options used by every lightbox */
@@ -67,9 +68,9 @@ export class MediumLightboxCore {
                 .invert($animElm)
                 .play(options.duration);
         }
-        this.state = STATES.Open;
+        this.state = STATES.Open
 
-        window.addEventListener("scroll", this._onScroll);
+        this.attachListeners();
 
         return this.active.$lightbox;
     }
@@ -80,7 +81,7 @@ export class MediumLightboxCore {
         if ($img && this.active.$img !== $img) { return; }
         if (!$img) { $img = this.active.$img; }
 
-        window.removeEventListener("scroll", this._onScroll);
+        this.detachListeners();
 
         this.state = STATES.Closing;
         const active = this.active; // we store this for later in case .active is updated while we're animating the close
@@ -288,6 +289,18 @@ export class MediumLightboxCore {
         });
     }
 
+    /** Attaches listeners we need globally */
+    attachListeners() {
+        window.addEventListener("scroll", this._onScroll);
+        document.addEventListener("keydown", this._onKeyDown);
+    }
+
+    /** Detaches global listeners */
+    detachListeners() {
+        window.removeEventListener("scroll", this._onScroll);
+        document.removeEventListener("keydown", this._onKeyDown);
+    }
+
     /** Helper function used as scroll listener. Debounces calls to .onScroll */
     _onScroll(): void {
         if (this._raf) { return; }
@@ -305,6 +318,17 @@ export class MediumLightboxCore {
         const delta = Math.abs(this.active.scrollPos - scrollPos);
 
         if (delta > scrollAllowance) {
+            this.close();
+        }
+    }
+
+    /** Helper function used to ensure that .onKeyDown is called with proper `this` value, even if overwritten by plugins */
+    _onKeyDown(e: KeyboardEvent) {
+        this.onKeyDown(e);
+    }
+    onKeyDown(e: KeyboardEvent) {
+        if (!this.active) { return; }
+        if (e.key === "Escape") {
             this.close();
         }
     }

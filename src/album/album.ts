@@ -21,7 +21,7 @@ export interface MediumLightboxAlbumed extends MediumLightboxCore {
 
 /** Augments the YAMZ instance to support albums */
 export default function withAlbum(yamz: PartialBy<MediumLightboxAlbumed, "moveToAlbumEntry">): MediumLightboxAlbumed {
-    const { defaultLightboxGenerator, optsFromElm } = yamz;
+    const { defaultLightboxGenerator, optsFromElm, onKeyDown } = yamz;
 
     yamz.options = {
         wrapAlbum: false,
@@ -119,6 +119,36 @@ export default function withAlbum(yamz: PartialBy<MediumLightboxAlbumed, "moveTo
         $target.addEventListener("animationend", _onAnimEnd);
         $target.addEventListener("animationcancel", _onAnimEnd);
         $target.classList.add(`${Classes.IMG_WRAPPER}--out-${directions.out}`);
+    };
+
+    // finally extend the keyboard interactivity
+    yamz.onKeyDown = function(e: KeyboardEvent) {
+        onKeyDown.call(this, e);
+        if (!this.active) { return; }
+        const opts = this.active.options as AlbumOptions;
+        if (!opts.album) { return; }
+
+        // move back/forward in album when pressing arrow keys
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+            const $curImg = this.active.$img;
+            const index = opts.album.findIndex(entry => entry.img === $curImg);
+            const prevIndex = opts.wrapAlbum
+                ? (opts.album.length + index - 1) % opts.album.length
+                : index - 1;
+            const nextIndex = opts.wrapAlbum
+                ? (opts.album.length + index + 1) % opts.album.length
+                : index + 1;
+            const targetIndex = e.key === "ArrowLeft"
+                ? prevIndex
+                : nextIndex;
+
+            if (targetIndex >= 0 && targetIndex < opts.album.length) {
+                (this as MediumLightboxAlbumed).moveToAlbumEntry(
+                    opts.album[targetIndex],
+                    e.key === "ArrowLeft" ? "prev" : "next"
+                );
+            }
+        }
     };
 
     return yamz as MediumLightboxAlbumed;
