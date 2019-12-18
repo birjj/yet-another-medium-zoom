@@ -68,6 +68,7 @@ $imgs.forEach($img => {
         $caption.appendChild($link);
 
         opts.caption = $caption;
+        delete $img.dataset.caption;
     }
 
     yamz.bind($img, opts);
