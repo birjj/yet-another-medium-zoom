@@ -62,12 +62,12 @@ export function getHighestFromSrcSet(srcset: string, targetWidth=document.body.c
 
 export function getSrcFromImage($elm: HTMLImageElement | HTMLPictureElement): string {
     if ($elm instanceof HTMLImageElement) {
-        return $elm.currentSrc;
+        return $elm.currentSrc || /* IE11 support */$elm.src;
     }
     if ($elm instanceof HTMLPictureElement) {
         const $img = $elm.querySelector("img");
         if ($img) {
-            return $img.currentSrc;
+            return $img.currentSrc || /* IE11 support */$img.src;
         }
     }
     return "";

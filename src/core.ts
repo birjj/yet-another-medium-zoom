@@ -47,7 +47,11 @@ export class MediumLightboxCore {
         if (!isValidImage($img)) { throw new TypeError(`${$img} cannot be used as an image`); }
         if (this.active) { await this.close(); }
 
-        const options = Object.assign({}, this.options, $img.yamzOpts || {}, opts || {});
+        const options = {
+            ...this.options,
+            ...($img.yamzOpts || {}),
+            ...(opts || {})
+        };
 
         // generate our lightbox
         this.state = STATES.Opening;
@@ -120,7 +124,11 @@ export class MediumLightboxCore {
 
         // then generate the new lightbox and set it as active
         const $oldLightbox = this.active.$lightbox;
-        const nextOpts = Object.assign({}, this.options, $img.yamzOpts || {}, opts || {});
+        const nextOpts = {
+            ...this.options,
+            ...($img.yamzOpts || {}),
+            ...(opts || {})
+        };
         const nextActive = this.generateLightbox($img, nextOpts);
         this.active = {
             ...this.active,
@@ -277,7 +285,10 @@ export class MediumLightboxCore {
         $imgs.forEach($img => {
             $img.addEventListener("click", () => {
                 // we extract options from the DOM here so that developers can change the data attributes and have it reflected
-                const imgOpts = Object.assign({}, this.optsFromElm($img), opts || {});
+                const imgOpts = {
+                    ...this.optsFromElm($img),
+                    ...(opts || {})
+                };
                 this.open($img, imgOpts);
             });
             $img.classList.add(Classes.ORIGINAL);

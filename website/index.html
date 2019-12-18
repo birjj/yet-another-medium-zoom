@@ -7,6 +7,12 @@
         <title>Yet Another Medium Zoom</title>
 
         <link href="https://fonts.googleapis.com/css?family=Questrial:400,700|Lora:400&display=swap" rel="stylesheet">
+        <!-- Load polyfills needed (can't wait for 2025) -->
+        <script>
+            if (!("HTMLPictureElement" in this)) { this.HTMLPictureElement = function(){}; }
+        </script>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=Array.from%2CArray.prototype.findIndex%2CPromise" defer crossorigin="anonymous"></script>
+        <!-- Then our actual stuff -->
         <script src="js/index.ts" defer></script>
         <link href="css/index.css" rel="stylesheet" />
     </head>
@@ -77,8 +83,9 @@
             <p>Specifically my focus for this library has been on:</p>
             <ul>
                 <li>User experience, especially for loading of high-res images.</li>
-                <li>Customizability and extendability so developers can tune the lightbox to their specific site.</li>
+                <li>Customizability and extendability so developers can tune the lightbox to their specific needs.</li>
                 <li>Built-in support for &lt;picture&gt; and srcset, so you don't need to manually specify the high-res URL if you're using responsive images.</li>
+                <li>Album support.</li>
             </ul>
             <p>The library is built in such a way that new features can be implemented easily. Not only can you customize the DOM structure, but you can also write plugins if you need more advanced features. An example of this is the album support, which is implemented as a plugin.</p>
             <p>Should you nonetheless find that something is missing, you're always welcome to open an <a href="https://github.com/birjolaxew/yet-another-medium-zoom/issues" target="_blank" rel="noreferrer noopener">issue</a> so I can have a look at it.</p>

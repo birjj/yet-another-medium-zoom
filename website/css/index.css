@@ -137,13 +137,12 @@ p a[href^="https://github.com"]::after {
 }
 
 .img-grid {
-    display: flex;
-    flex-wrap: wrap;
+    /* would much prefer to use flexbox here, but iOS is iOS :shrug: */
+    font-size: 0; /* fix for wrapping due to whitespace between images */
 }
 .img-grid > * {
-    flex-basis: 49%;
+    display: inline-block;
     width: 49%;
-    flex-grow: 1;
     margin-right: 2%;
     margin-bottom: 2%;
 }
@@ -217,4 +216,10 @@ p a[href^="https://github.com"]::after {
     .custom__right {
         padding-left: 0;
     }
+}
+
+/* ie11 */
+figure,
+.img-grid {
+    min-height: 1px;
 }
