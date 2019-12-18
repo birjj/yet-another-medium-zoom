@@ -1,22 +1,35 @@
-import lightbox from "../../src/index";
+import yamz from "../../src/index";
 import { ImageOptions } from "../../src/types";
 import { CaptionOptions } from "../../src/caption/caption";
 
+/**
+ * Our custom lightbox generator, which is given to YAMZ as the lightboxGenerator option
+ * It is often useful to generate the normal lightbox first, and then customizing it
+ * For this reason the normal lightbox generator is exposed as .defaultLightboxGenerator
+ * @param $img The image element that we should insert into the lightbox. The returned HTMLElement from this function *must* include this element
+ * @param opts The options for this image
+ * @param $original A reference to the <img> or <picture> that the lightbox represents
+ * @returns {HTMLElement} The generated lightbox DOM element
+ */
 function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions, $original: HTMLElement) {
-    const $lightbox = lightbox.defaultLightboxGenerator($img, opts, $original);
+    const $lightbox = yamz.defaultLightboxGenerator($img, opts, $original);
     if (!$original.dataset.customLayout) { return $lightbox; }
     $lightbox.classList.add("custom");
 
+    // our custom layout has a left/right seperation; generate the two containers
     const $left = document.createElement("div");
     $left.classList.add("custom__left");
+    // and move the displayed image into the left side
     $left.appendChild($lightbox.querySelector(".yamz__img-wrapper"));
 
     const $right = document.createElement("div");
     $right.classList.add("custom__right");
+    // also insert a custom description into the lightbox
     const $description = document.createElement("p");
     $description.appendChild(document.createTextNode("This lightbox has a custom DOM structure."));
     $description.appendChild(document.createElement("br"));
     $description.appendChild(document.createTextNode("The animation automatically adapts so it matches the new location of the image."));
+    // and make sure we move the caption into the right side
     const $caption = $lightbox.querySelector(".yamz__caption");
     if ($caption) {
         $caption.insertBefore($description, $caption.firstChild);
@@ -28,7 +41,7 @@ function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions, $or
 
     return $lightbox;
 }
-lightbox.setOptions({
+yamz.setOptions({
     lightboxGenerator: customLightboxGenerator,
     wrapAlbum: true,
 });
@@ -57,5 +70,5 @@ $imgs.forEach($img => {
         opts.caption = $caption;
     }
 
-    lightbox.bind($img, opts);
+    yamz.bind($img, opts);
 });
