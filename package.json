@@ -1,6 +1,6 @@
 {
     "name": "yet-another-medium-zoom",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Highly configurable medium-like lightbox",
     "keywords": [
         "lightbox",
@@ -10,8 +10,8 @@
         "medium"
     ],
     "main": "dist/yet-another-medium-zoom.umd.js",
-    "module": "dist/yet-another-medium-zoom.es5.js",
-    "typings": "dist/types/core.d.ts",
+    "module": "dist/lib/index.js",
+    "types": "dist/types/index.d.ts",
     "files": [
         "dist",
         "src"
