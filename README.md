@@ -65,4 +65,6 @@ You can style the lightbox however you want by simply using CSS to overwrite the
 
 #### Plugins
 
-Plugins can be created if you need more advanced control. These are implemented as higher order functions, that augment a given YAMZ instance with whatever features the plugin implements. Both the caption and album support are actually implemented as plugins (that are enabled by default). If you want to create your own plugin, it might be useful to reference the implementation of the [caption](src/caption/caption.ts) or [album](src/album/album.ts) plugins.
+Plugins can be created if you need more advanced control. These are implemented as functions that augment a given YAMZ instance with whatever features the plugin implements. These plugins can then be composited if you want to use more than one at a time. An example of this can be seen in [our main export](src/index.ts).
+
+Both the caption and album support are actually implemented as plugins (that are enabled by default), so if you want to create your own plugin it might be useful to reference the implementation of the [caption](src/caption/caption.ts) or [album](src/album/album.ts) plugins.
