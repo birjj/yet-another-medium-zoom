@@ -2,8 +2,6 @@ import { MediumLightboxCore } from "../core";
 import { ImageOptions, Classes, GlobalOptions } from "../types";
 import "./album.css";
 
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
 export interface AlbumOptions extends ImageOptions {
     album?: AlbumEntry[],
     wrapAlbum?: boolean,
@@ -14,14 +12,15 @@ export interface AlbumEntry {
     opts?: AlbumOptions,
 };
 
-export interface MediumLightboxAlbumed extends MediumLightboxCore {
+export interface MediumLightboxAlbumed {
     moveToAlbumEntry: (entry: AlbumEntry, direction: "next"|"prev") => void,
     setOptions: (options: Partial<GlobalOptions&AlbumOptions>) => void
 };
 
 /** Augments the YAMZ instance to support albums */
-export default function withAlbum(yamz: PartialBy<MediumLightboxAlbumed, "moveToAlbumEntry">): MediumLightboxAlbumed {
-    const { defaultLightboxGenerator, optsFromElm, onKeyDown } = yamz;
+export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: YamzType) {
+    const { defaultLightboxGenerator, optsFromElm, onKeyDown } = _yamz;
+    const yamz = _yamz as YamzType&MediumLightboxAlbumed;
 
     yamz.options = {
         wrapAlbum: false,
@@ -151,5 +150,5 @@ export default function withAlbum(yamz: PartialBy<MediumLightboxAlbumed, "moveTo
         }
     };
 
-    return yamz as MediumLightboxAlbumed;
+    return yamz;
 };

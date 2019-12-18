@@ -2,7 +2,7 @@ import { MediumLightboxCore } from "../core";
 import { ImageOptions, Classes, GlobalOptions } from "../types";
 import "./caption.css";
 
-export interface MediumLightboxCaptioned extends MediumLightboxCore {
+export interface MediumLightboxCaptioned {
     setOptions: (options: Partial<GlobalOptions&CaptionOptions>) => void
 };
 
@@ -11,7 +11,7 @@ export interface CaptionOptions extends ImageOptions {
 };
 
 /** Augments the YAMZ instance to support captions */
-export default function withCaption(yamz: MediumLightboxCore) {
+export default function withCaption<YamzType extends MediumLightboxCore>(yamz: YamzType) {
     const { defaultLightboxGenerator, optsFromElm } = yamz;
 
     // insert caption into the lightbox if we're given one
@@ -41,5 +41,5 @@ export default function withCaption(yamz: MediumLightboxCore) {
         return outp;
     };
 
-    return yamz as MediumLightboxCaptioned;
+    return yamz as YamzType&MediumLightboxCaptioned;
 };
