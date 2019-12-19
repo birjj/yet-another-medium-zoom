@@ -42,7 +42,7 @@ export function getHighResFromImage($image: HTMLImageElement|HTMLPictureElement,
 
 export function getHighestFromSrcSet(srcset: string, targetWidth=document.body.clientWidth) {
     const parsed = srcset.split(",").map(entry => {
-        const widthMatch = /([^ ]+) (\d+)w$/.exec(entry);
+        const widthMatch = /([^ ]+) +(\d+)w$/.exec(entry.trim());
         if (!widthMatch) { return null; }
         return {
             src: widthMatch[1],
