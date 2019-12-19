@@ -1,6 +1,6 @@
 {
     "name": "yet-another-medium-zoom",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Highly configurable medium-like lightbox",
     "keywords": [
         "lightbox",
@@ -30,6 +30,7 @@
         "lint": "tslint --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
         "prebuild": "rimraf dist",
         "build": "tsc --module commonjs && rollup -c rollup.config.ts",
+        "prepublishOnly": "npm run build",
         "start": "rollup -c rollup.config.ts -w",
         "test": "jest --coverage",
         "test:watch": "jest --coverage --watch",
