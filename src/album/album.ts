@@ -1,10 +1,12 @@
 import { MediumLightboxCore } from "../core";
-import { Classes } from "../types";
+import { Classes, Plugged } from "../types";
 import "./album.css";
 
 export interface Albumed<Yamz extends MediumLightboxCore> {
+    defaultLightboxGenerator: ($copiedImg: HTMLElement, opts: Parameters<Yamz["defaultLightboxGenerator"]>[1] & AlbumOptions<Yamz>, $original: HTMLElement) => HTMLElement,
     moveToAlbumEntry: (entry: AlbumEntry<Yamz>, direction: "next"|"prev") => void,
-    setOptions: (options: Parameters<Yamz["setOptions"]>[0] & Partial<AlbumOptions<Yamz>>) => void
+    setOptions: (options: Parameters<Yamz["setOptions"]>[0] & Partial<AlbumOptions<Yamz>>) => void,
+    options: Yamz["options"] & AlbumOptions<Yamz>
 };
 
 export interface AlbumOptions<Yamz extends MediumLightboxCore> {
@@ -20,12 +22,12 @@ export interface AlbumEntry<Yamz extends MediumLightboxCore> {
 /** Augments the YAMZ instance to support albums */
 export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: YamzType) {
     const { defaultLightboxGenerator, optsFromElm, onKeyDown } = _yamz;
-    const yamz = _yamz as YamzType & Albumed<YamzType>;
+    const yamz = _yamz as unknown as Plugged<YamzType, Albumed<YamzType>>;
 
     yamz.options = {
         wrapAlbum: false,
         ...yamz.options,
-    } as (typeof yamz.options) & AlbumOptions<YamzType>;
+    };
 
     function augmentLightbox(yamz: Albumed<YamzType>, $lightbox: HTMLElement, opts: AlbumOptions<YamzType>, index: number) {
         if (!opts.album) { return $lightbox; }
@@ -59,7 +61,7 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
     }
 
     // insert album stuff into the lightbox if we're given one
-    yamz.defaultLightboxGenerator = function($copiedImg: HTMLElement, opts: Parameters<YamzType["defaultLightboxGenerator"]>[1] & AlbumOptions<YamzType>, $original: HTMLElement) {
+    yamz.defaultLightboxGenerator = function($copiedImg, opts, $original) {
         const $lightbox = defaultLightboxGenerator($copiedImg, opts, $original);
 
         if (opts.album) {

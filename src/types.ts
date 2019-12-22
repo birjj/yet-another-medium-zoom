@@ -37,3 +37,11 @@ export enum STATES {
     Open,
     Closing
 };
+
+// utility types
+// https://github.com/piotrwitek/utility-types/blob/ba66c895c7e52263268d179c142088f3e245a033/src/mapped-types.ts#L283-L296
+export type Subtract<T extends object, U extends object> = Pick<
+  T,
+  Exclude<keyof T, keyof U>
+>;
+export type Plugged<T extends object, U extends object> = Subtract<T, U> & U;

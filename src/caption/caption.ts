@@ -1,11 +1,12 @@
 import { MediumLightboxCore } from "../core";
-import { Classes } from "../types";
+import { Classes, Plugged } from "../types";
 import "./caption.css";
 
 export interface Captioned<Yamz extends MediumLightboxCore> {
     defaultLightboxGenerator: ($copiedImg: HTMLElement, opts: Parameters<Yamz["defaultLightboxGenerator"]>[1] & CaptionOptions, $original: HTMLElement) => HTMLElement,
     setOptions: (options: Parameters<Yamz["setOptions"]>[0] & Partial<CaptionOptions>) => void,
-    optsFromElm: ($elm: HTMLElement) => ReturnType<Yamz["optsFromElm"]> & CaptionOptions
+    optsFromElm: ($elm: HTMLElement) => ReturnType<Yamz["optsFromElm"]> & CaptionOptions,
+    options: Yamz["options"] & CaptionOptions
 };
 
 export interface CaptionOptions {
@@ -15,10 +16,10 @@ export interface CaptionOptions {
 /** Augments the YAMZ instance to support captions */
 export default function withCaption<YamzType extends MediumLightboxCore>(_yamz: YamzType) {
     const { defaultLightboxGenerator, optsFromElm } = _yamz;
-    const yamz = _yamz as YamzType & Captioned<YamzType>;
+    const yamz = _yamz as unknown as Plugged<YamzType, Captioned<YamzType>>;
 
     // insert caption into the lightbox if we're given one
-    yamz.defaultLightboxGenerator = function($copiedImg: HTMLElement, opts: Parameters<YamzType["defaultLightboxGenerator"]>[1]&CaptionOptions, $original: HTMLElement) {
+    yamz.defaultLightboxGenerator = function($copiedImg, opts, $original) {
         const $lightbox = defaultLightboxGenerator.call(this, $copiedImg, opts, $original);
 
         // add caption if given
