@@ -257,7 +257,7 @@ export class MediumLightboxCore {
     }
 
     /** Parses options from a DOM element */
-    optsFromElm($elm: HTMLElement) {
+    optsFromElm($elm: HTMLElement): ImageOptions {
         const outp: ImageOptions = {};
 
         if ($elm.dataset.class) { outp.class = $elm.dataset.class; }

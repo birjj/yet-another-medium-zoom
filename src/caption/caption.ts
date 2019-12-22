@@ -1,21 +1,24 @@
 import { MediumLightboxCore } from "../core";
-import { ImageOptions, Classes, GlobalOptions } from "../types";
+import { Classes } from "../types";
 import "./caption.css";
 
-export interface MediumLightboxCaptioned {
-    setOptions: (options: Partial<GlobalOptions&CaptionOptions>) => void
+export interface Captioned<Yamz extends MediumLightboxCore> {
+    defaultLightboxGenerator: ($copiedImg: HTMLElement, opts: Parameters<Yamz["defaultLightboxGenerator"]>[1] & CaptionOptions, $original: HTMLElement) => HTMLElement,
+    setOptions: (options: Parameters<Yamz["setOptions"]>[0] & Partial<CaptionOptions>) => void,
+    optsFromElm: ($elm: HTMLElement) => ReturnType<Yamz["optsFromElm"]> & CaptionOptions
 };
 
-export interface CaptionOptions extends ImageOptions {
+export interface CaptionOptions {
     caption?: string | HTMLElement,
 };
 
 /** Augments the YAMZ instance to support captions */
-export default function withCaption<YamzType extends MediumLightboxCore>(yamz: YamzType) {
-    const { defaultLightboxGenerator, optsFromElm } = yamz;
+export default function withCaption<YamzType extends MediumLightboxCore>(_yamz: YamzType) {
+    const { defaultLightboxGenerator, optsFromElm } = _yamz;
+    const yamz = _yamz as YamzType & Captioned<YamzType>;
 
     // insert caption into the lightbox if we're given one
-    yamz.defaultLightboxGenerator = function($copiedImg: HTMLElement, opts: CaptionOptions, $original: HTMLElement) {
+    yamz.defaultLightboxGenerator = function($copiedImg: HTMLElement, opts: Parameters<YamzType["defaultLightboxGenerator"]>[1]&CaptionOptions, $original: HTMLElement) {
         const $lightbox = defaultLightboxGenerator.call(this, $copiedImg, opts, $original);
 
         // add caption if given
@@ -36,10 +39,11 @@ export default function withCaption<YamzType extends MediumLightboxCore>(yamz: Y
 
     // also allow specifying the caption in HTML
     yamz.optsFromElm = function($elm: HTMLElement) {
-        const outp: CaptionOptions = optsFromElm.call(this, $elm);
+        type outpType = ReturnType<YamzType["optsFromElm"]> & CaptionOptions;
+        const outp: outpType = optsFromElm.call(this, $elm) as outpType;
         if ($elm.dataset.caption) { outp.caption = $elm.dataset.caption; }
         return outp;
     };
 
-    return yamz as YamzType&MediumLightboxCaptioned;
+    return yamz;
 };

@@ -1,33 +1,33 @@
 import { MediumLightboxCore } from "../core";
-import { ImageOptions, Classes, GlobalOptions } from "../types";
+import { Classes } from "../types";
 import "./album.css";
 
-export interface AlbumOptions extends ImageOptions {
-    album?: AlbumEntry[],
+export interface Albumed<Yamz extends MediumLightboxCore> {
+    moveToAlbumEntry: (entry: AlbumEntry<Yamz>, direction: "next"|"prev") => void,
+    setOptions: (options: Parameters<Yamz["setOptions"]>[0] & Partial<AlbumOptions<Yamz>>) => void
+};
+
+export interface AlbumOptions<Yamz extends MediumLightboxCore> {
+    album?: AlbumEntry<Yamz>[],
     wrapAlbum?: boolean,
 };
 
-export interface AlbumEntry {
+export interface AlbumEntry<Yamz extends MediumLightboxCore> {
     img: HTMLElement,
-    opts?: AlbumOptions,
-};
-
-export interface MediumLightboxAlbumed {
-    moveToAlbumEntry: (entry: AlbumEntry, direction: "next"|"prev") => void,
-    setOptions: (options: Partial<GlobalOptions&AlbumOptions>) => void
+    opts?: ReturnType<Yamz["optsFromElm"]> & AlbumOptions<Yamz>,
 };
 
 /** Augments the YAMZ instance to support albums */
 export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: YamzType) {
     const { defaultLightboxGenerator, optsFromElm, onKeyDown } = _yamz;
-    const yamz = _yamz as YamzType&MediumLightboxAlbumed;
+    const yamz = _yamz as YamzType & Albumed<YamzType>;
 
     yamz.options = {
         wrapAlbum: false,
         ...yamz.options,
-    } as GlobalOptions & AlbumOptions;
+    } as (typeof yamz.options) & AlbumOptions<YamzType>;
 
-    function augmentLightbox(yamz: MediumLightboxAlbumed, $lightbox: HTMLElement, opts: AlbumOptions, index: number) {
+    function augmentLightbox(yamz: Albumed<YamzType>, $lightbox: HTMLElement, opts: AlbumOptions<YamzType>, index: number) {
         if (!opts.album) { return $lightbox; }
         const prevIndex = opts.wrapAlbum
             ? (opts.album.length + index - 1) % opts.album.length
@@ -58,13 +58,13 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
         }
     }
 
-    // insert caption into the lightbox if we're given one
-    yamz.defaultLightboxGenerator = function($copiedImg: HTMLElement, opts: AlbumOptions, $original: HTMLElement) {
+    // insert album stuff into the lightbox if we're given one
+    yamz.defaultLightboxGenerator = function($copiedImg: HTMLElement, opts: Parameters<YamzType["defaultLightboxGenerator"]>[1] & AlbumOptions<YamzType>, $original: HTMLElement) {
         const $lightbox = defaultLightboxGenerator($copiedImg, opts, $original);
 
         if (opts.album) {
             const index = opts.album.findIndex(entry => entry.img === $original);
-            augmentLightbox(this as MediumLightboxAlbumed, $lightbox, opts, index);
+            augmentLightbox(this, $lightbox, opts, index);
         }
 
         return $lightbox;
@@ -72,7 +72,8 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
 
     // also allow specifying the album in HTML
     yamz.optsFromElm = function($elm: HTMLElement) {
-        const outp: AlbumOptions = optsFromElm($elm);
+        type outpType = ReturnType<YamzType["optsFromElm"]> & AlbumOptions<YamzType>;
+        const outp: outpType = optsFromElm($elm) as outpType;
         if ($elm.dataset.album) {
             const $siblings = Array.from(document.querySelectorAll(`[data-album="${$elm.dataset.album}"]`)) as HTMLElement[];
             outp.album = $siblings.map($sibling => {
@@ -80,20 +81,20 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
                     img: $sibling,
                     opts: optsFromElm($sibling)
                 };
-            });
+            }) as AlbumEntry<YamzType>[];
             // make sure each entry knows about which album it's in
             outp.album.forEach(entry => {
                 entry.opts = {
                     ...(entry.opts || {}),
                     album: outp.album,
-                };
+                } as outpType;
             });
         }
         return outp;
     };
 
     // add new method for moving to an album entry
-    yamz.moveToAlbumEntry = function(entry: AlbumEntry, direction: "next"|"prev") {
+    yamz.moveToAlbumEntry = function(entry: AlbumEntry<YamzType>, direction: "next"|"prev") {
         if (!this.active) { return; }
         const $target = this.active.$lightbox.querySelector(`.${Classes.IMG_WRAPPER}`) as HTMLElement;
         if (!$target) {
@@ -124,7 +125,7 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
     yamz.onKeyDown = function(e: KeyboardEvent) {
         onKeyDown.call(this, e);
         if (!this.active) { return; }
-        const opts = this.active.options as AlbumOptions;
+        const opts = this.active.options as AlbumOptions<YamzType>;
         if (!opts.album) { return; }
 
         // move back/forward in album when pressing arrow keys
@@ -142,7 +143,7 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
                 : nextIndex;
 
             if (targetIndex >= 0 && targetIndex < opts.album.length) {
-                (this as MediumLightboxAlbumed).moveToAlbumEntry(
+                (this as Albumed<YamzType>).moveToAlbumEntry(
                     opts.album[targetIndex],
                     e.key === "ArrowLeft" ? "prev" : "next"
                 );
