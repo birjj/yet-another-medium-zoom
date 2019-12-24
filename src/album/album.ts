@@ -6,6 +6,7 @@ export interface Albumed<Yamz extends MediumLightboxCore> {
     defaultLightboxGenerator: ($copiedImg: HTMLElement, opts: Parameters<Yamz["defaultLightboxGenerator"]>[1] & AlbumOptions<Yamz>, $original: HTMLElement) => HTMLElement,
     moveToAlbumEntry: (entry: AlbumEntry<Yamz>, direction: "next"|"prev") => void,
     setOptions: (options: Parameters<Yamz["setOptions"]>[0] & Partial<AlbumOptions<Yamz>>) => void,
+    bind: ($imgs: Parameters<Yamz["bind"]>[0], opts: Parameters<Yamz["bind"]>[1] & Partial<AlbumOptions<Yamz>>) => void,
     options: Yamz["options"] & AlbumOptions<Yamz>
 };
 
