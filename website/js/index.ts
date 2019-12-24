@@ -43,7 +43,7 @@ function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions, $or
 }
 yamz.setOptions({
     lightboxGenerator: customLightboxGenerator,
-    wrapAlbum: true,
+    wrapAlbum: true
 });
 
 const $imgs = Array.from(document.querySelectorAll("*:not(picture) > img, picture")) as HTMLElement[];
