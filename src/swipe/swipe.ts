@@ -1,5 +1,5 @@
 import { MediumLightboxCore } from "../core";
-import { YamzPlugin } from "../types";
+import { YamzPlugin, Classes } from "../types";
 import withAlbum from "../album/album";
 
 export interface Swipeable {
@@ -7,6 +7,7 @@ export interface Swipeable {
     updateSwipe: (e: Touch|MouseEvent, opts: SwipeOptions) => void,
     endSwipe: (e: Touch|MouseEvent, opts: SwipeOptions) => boolean,
     cancelSwipe: () => void,
+    applySwipeTransform: (deltaX: number, opts: SwipeOptions) => void,
     _startTouch?: {
         clientX: number,
         clientY: number,
@@ -21,7 +22,11 @@ export interface Swipeable {
 };
 
 export interface SwipeOptions {
+    /** Describes how far users have to drag before it's recognized as a drag */
     swipeThreshold?: number,
+    /** Describes how far the image can move visually in response to being dragged */
+    swipeResponseLimit?: number,
+    /** If true, desktop users can drag images using their mouse */
     swipeOnDesktop?: boolean,
 };
 
@@ -32,6 +37,7 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
 
     yamz.options = {
         swipeThreshold: window.innerWidth * 0.25,
+        swipeResponseLimit: 96,
         swipeOnDesktop: true,
         ...yamz.options
     };
@@ -81,6 +87,30 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
         type outpType = ReturnType<YamzType["optsFromElm"]> & SwipeOptions;
         const outp: outpType = optsFromElm.call(this, $elm) as outpType;
         return outp;
+    };
+
+    yamz.applySwipeTransform = function(deltaX: number, opts: SwipeOptions) {
+        if (!this.active) { return; }
+        let offset = deltaX;
+        if (opts.swipeResponseLimit) {
+            // use a sine function to slowly scale down
+            const limit = opts.swipeResponseLimit * 1.5; // this is where we want the image to stop moving entirely
+            const progress = Math.min(Math.abs(deltaX), limit) / opts.swipeResponseLimit;
+            const scale = Math.sin(progress * Math.PI / 3);
+            console.log("Progress", )
+            offset = opts.swipeResponseLimit * scale;
+
+            // maintain a very slight response to dragging further
+            const linearOffset = Math.abs(deltaX) - Math.min(Math.abs(deltaX), limit);
+            offset += linearOffset * 0.05;
+
+            if (deltaX < 0) { offset = -offset; }
+        }
+
+        const $target = this.active.$lightbox.querySelector(`.${Classes.IMG_WRAPPER}`) as HTMLElement|null;
+        if ($target) {
+            $target.style.transform = `translateX(${offset.toFixed(5)}px)`;
+        }
     };
 
     /**
@@ -153,7 +183,7 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
         // ignore ones where the mouse hasn't moved
         if (xDelta === 0 && yDelta === 0) { return; }
 
-        // TODO: update DOM
+        this.applySwipeTransform(e.clientX - this._startTouch.clientX, opts);
     };
 
     /**
@@ -213,6 +243,7 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
     };
 
     yamz.cancelSwipe = function() {
+        this.applySwipeTransform(0, {});
         delete this._startTouch;
         delete this._lastTouch;
     };
