@@ -1,13 +1,9 @@
 import { MediumLightboxCore } from "../core";
-import { Classes, Plugged } from "../types";
+import { Classes, YamzPlugin } from "../types";
 import "./album.css";
 
 export interface Albumed<Yamz extends MediumLightboxCore> {
-    defaultLightboxGenerator: ($copiedImg: HTMLElement, opts: Parameters<Yamz["defaultLightboxGenerator"]>[1] & AlbumOptions<Yamz>, $original: HTMLElement) => HTMLElement,
     moveToAlbumEntry: (entry: AlbumEntry<Yamz>, direction: "next"|"prev") => void,
-    setOptions: (options: Parameters<Yamz["setOptions"]>[0] & Partial<AlbumOptions<Yamz>>) => void,
-    bind: ($imgs: Parameters<Yamz["bind"]>[0], opts: Parameters<Yamz["bind"]>[1] & Partial<AlbumOptions<Yamz>>) => void,
-    options: Yamz["options"] & AlbumOptions<Yamz>
 };
 
 export interface AlbumOptions<Yamz extends MediumLightboxCore> {
@@ -23,7 +19,7 @@ export interface AlbumEntry<Yamz extends MediumLightboxCore> {
 /** Augments the YAMZ instance to support albums */
 export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: YamzType) {
     const { defaultLightboxGenerator, optsFromElm, onKeyDown } = _yamz;
-    const yamz = _yamz as unknown as Plugged<YamzType, Albumed<YamzType>>;
+    const yamz = _yamz as YamzPlugin<YamzType, Albumed<YamzType>, AlbumOptions<YamzType>, AlbumOptions<YamzType>>;
 
     yamz.options = {
         wrapAlbum: false,

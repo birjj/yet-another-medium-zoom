@@ -1,14 +1,8 @@
 import { MediumLightboxCore } from "../core";
-import { Plugged } from "../types";
+import { YamzPlugin } from "../types";
 import withAlbum from "../album/album";
 
-export interface Swipeable<Yamz extends MediumLightboxCore> {
-    defaultLightboxGenerator: ($copiedImg: HTMLElement, opts: Parameters<Yamz["defaultLightboxGenerator"]>[1] & SwipeOptions, $original: HTMLElement) => HTMLElement,
-    setOptions: (options: Parameters<Yamz["setOptions"]>[0] & Partial<SwipeOptions>) => void,
-    optsFromElm: ($elm: HTMLElement) => ReturnType<Yamz["optsFromElm"]> & SwipeOptions,
-    bind: ($imgs: Parameters<Yamz["bind"]>[0], opts: Parameters<Yamz["bind"]>[1] & Partial<SwipeOptions>) => void,
-    options: Yamz["options"] & SwipeOptions,
-
+export interface Swipeable {
     startSwipe: (e: Touch|MouseEvent, opts: SwipeOptions) => void,
     updateSwipe: (e: Touch|MouseEvent, opts: SwipeOptions) => void,
     endSwipe: (e: Touch|MouseEvent, opts: SwipeOptions) => boolean,
@@ -34,7 +28,7 @@ export interface SwipeOptions {
 /** Augments the YAMZ instance to support swiping through albums on mobile */
 export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>(_yamz: YamzType) {
     const { defaultLightboxGenerator, optsFromElm } = _yamz;
-    const yamz = _yamz as unknown as Plugged<YamzType, Swipeable<YamzType>>;
+    const yamz = _yamz as YamzPlugin<YamzType, Swipeable, SwipeOptions, SwipeOptions>;
 
     yamz.options = {
         swipeThreshold: window.innerWidth * 0.25,

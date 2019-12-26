@@ -1,3 +1,5 @@
+import { MediumLightboxCore } from "./core";
+
 export interface GlobalOptions {
     scrollAllowance: number,
     duration: number,
@@ -44,4 +46,27 @@ export type Subtract<T extends object, U extends object> = Pick<
   T,
   Exclude<keyof T, keyof U>
 >;
-export type Plugged<T extends object, U extends object> = Subtract<T, U> & U;
+type Overwrite<T extends object, U extends object> = Subtract<T, U> & U;
+/**
+ * Applies a given Plugin, with its own GlobalOptions and ImageOptions, to an instance of YAMZ
+ */
+export type YamzPlugin<
+    Yamz extends MediumLightboxCore,
+    Plugin extends object,
+    NewGlobalOpts extends object,
+    NewImageOpts extends object
+> = Overwrite<
+    Yamz,
+    Overwrite<
+        {
+            defaultLightboxGenerator: ($copiedImg: HTMLElement, opts: Parameters<Yamz["defaultLightboxGenerator"]>[1] & NewImageOpts, $original: HTMLElement) => HTMLElement,
+            setOptions: (options: Parameters<Yamz["setOptions"]>[0] & Partial<NewGlobalOpts>) => ReturnType<Yamz["setOptions"]>,
+            optsFromElm: ($elm: HTMLElement) => ReturnType<Yamz["optsFromElm"]> & NewImageOpts,
+            open: ($img: Parameters<Yamz["open"]>[0], opts?: Parameters<Yamz["open"]>[1] & NewImageOpts) => ReturnType<Yamz["open"]>,
+            replace: ($img: Parameters<Yamz["replace"]>[0], opts?: Parameters<Yamz["replace"]>[1] & NewImageOpts) => ReturnType<Yamz["replace"]>,
+            bind: ($imgs: Parameters<Yamz["bind"]>[0], opts: Parameters<Yamz["bind"]>[1] & NewImageOpts) => ReturnType<Yamz["bind"]>,
+            options: Yamz["options"] & NewGlobalOpts
+        },
+        Plugin
+    >
+>;
