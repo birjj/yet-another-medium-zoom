@@ -37,7 +37,7 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
 
     yamz.options = {
         swipeThreshold: window.innerWidth * 0.25,
-        swipeResponseLimit: 96,
+        swipeResponseLimit: window.innerWidth * 0.05,
         swipeOnDesktop: true,
         ...yamz.options
     };
@@ -92,13 +92,20 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
     yamz.applySwipeTransform = function(deltaX: number, opts: SwipeOptions) {
         if (!this.active) { return; }
         let offset = deltaX;
+        let scale = 1;
         if (opts.swipeResponseLimit) {
             // use a sine function to slowly scale down
+            // sine wave is 3 long, because that gives a 45 degree angle at the start, so 1px touch movement = 1px image movement
             const limit = opts.swipeResponseLimit * 1.5; // this is where we want the image to stop moving entirely
-            const progress = Math.min(Math.abs(deltaX), limit) / opts.swipeResponseLimit;
-            const scale = Math.sin(progress * Math.PI / 3);
-            console.log("Progress", )
-            offset = opts.swipeResponseLimit * scale;
+            const progress = Math.abs(deltaX) / opts.swipeResponseLimit;
+            const clampedProgress = Math.min(progress, 1.5);
+            const offsetScale = Math.sin(clampedProgress * Math.PI / 3);
+            offset = opts.swipeResponseLimit * offsetScale;
+
+            // update the opacity if we're nearing the end
+            if (progress > 1) {
+                scale = Math.min(Math.max(1 - (progress - 1)*0.01, 0.8), 1);
+            }
 
             // maintain a very slight response to dragging further
             const linearOffset = Math.abs(deltaX) - Math.min(Math.abs(deltaX), limit);
@@ -109,7 +116,8 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
 
         const $target = this.active.$lightbox.querySelector(`.${Classes.IMG_WRAPPER}`) as HTMLElement|null;
         if ($target) {
-            $target.style.transform = `translateX(${offset.toFixed(5)}px)`;
+            $target.style.transform = `translateX(${offset.toFixed(5)}px) scale(${scale})`;
+            $target.style.opacity = `${1 - (1 - scale)*4}`;
         }
     };
 
@@ -233,8 +241,8 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
             console.log("Swipe detected in direction", finalDelta < 0 ? "LEFT" : "RIGHT");
             if (this.active) {
                 const $btn = finalDelta < 0
-                    ? this.active.$lightbox.querySelector(".yamz__album__prev")
-                    : this.active.$lightbox.querySelector(".yamz__album__next");
+                    ? this.active.$lightbox.querySelector(".yamz__album__next")
+                    : this.active.$lightbox.querySelector(".yamz__album__prev");
                 if ($btn) { ($btn as HTMLElement).click(); }
             }
             return true;
