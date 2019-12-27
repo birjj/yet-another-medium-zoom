@@ -238,13 +238,13 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
 
         // finally check it
         if (opts.swipeThreshold && opts.swipeThreshold > 0 && Math.abs(finalDelta) > opts.swipeThreshold) {
-            console.log("Swipe detected in direction", finalDelta < 0 ? "LEFT" : "RIGHT");
             if (this.active) {
                 const $btn = finalDelta < 0
                     ? this.active.$lightbox.querySelector(".yamz__album__next")
                     : this.active.$lightbox.querySelector(".yamz__album__prev");
                 if ($btn) { ($btn as HTMLElement).click(); }
             }
+            this.cancelSwipe();
             return true;
         }
         return false;
