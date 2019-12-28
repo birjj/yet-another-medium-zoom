@@ -1,6 +1,7 @@
 import { MediumLightboxCore } from "../core";
 import { YamzPlugin, Classes } from "../types";
 import withAlbum from "../album/album";
+import "./swipe.css";
 
 export interface Swipeable {
     startSwipe: (e: Touch|MouseEvent, opts: SwipeOptions) => void,
@@ -38,7 +39,7 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
     yamz.options = {
         swipeThreshold: window.innerWidth * 0.25,
         swipeResponseLimit: window.innerWidth * 0.05,
-        swipeOnDesktop: false,
+        swipeOnDesktop: true,
         ...yamz.options
     };
 
@@ -150,6 +151,13 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
             time: Date.now(),
             velocityX: 0
         };
+
+        if (this.active) {
+            const $target = this.active.$lightbox.querySelector(`.${Classes.IMG_WRAPPER}`);
+            if ($target) {
+                $target.classList.add(`${Classes.IMG_WRAPPER}--swiping`);
+            }
+        }
     };
 
     /**
@@ -179,7 +187,7 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
         this._lastTouch.time = Date.now();
         this._lastTouch.velocityX = timeDelta ? (e.clientX - this._startTouch.clientX) / timeDelta : 0;
 
-        const IGNORE_THRESHOLD = 8; // ignore test if we have moved barely anything. Possibly consider if this is better as an option?
+        const IGNORE_THRESHOLD = 32; // ignore test if we have moved barely anything. Possibly consider if this is better as an option?
         if (Math.max(xDelta, yDelta) < IGNORE_THRESHOLD) {
             return;
         }
@@ -254,6 +262,12 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
         this.applySwipeTransform(0, {});
         delete this._startTouch;
         delete this._lastTouch;
+        if (this.active) {
+            const $target = this.active.$lightbox.querySelector(`.${Classes.IMG_WRAPPER}`);
+            if ($target) {
+                $target.classList.remove(`${Classes.IMG_WRAPPER}--swiping`);
+            }
+        }
     };
 
     return yamz;
