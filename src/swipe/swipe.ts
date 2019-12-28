@@ -256,6 +256,7 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
             this.afterSwipe();
             return true;
         }
+        this.cancelSwipe();
         return false;
     };
 
