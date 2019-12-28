@@ -8,6 +8,7 @@ export interface Swipeable {
     updateSwipe: (e: Touch|MouseEvent, opts: SwipeOptions) => void,
     endSwipe: (e: Touch|MouseEvent, opts: SwipeOptions) => boolean,
     cancelSwipe: () => void,
+    afterSwipe: () => void,
     applySwipeTransform: (deltaX: number, opts: SwipeOptions) => void,
     _startTouch?: {
         clientX: number,
@@ -252,7 +253,7 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
                     : this.active.$lightbox.querySelector(".yamz__album__prev");
                 if ($btn) { ($btn as HTMLElement).click(); }
             }
-            this.cancelSwipe();
+            this.afterSwipe();
             return true;
         }
         return false;
@@ -260,6 +261,10 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
 
     yamz.cancelSwipe = function() {
         this.applySwipeTransform(0, {});
+        this.afterSwipe();
+    };
+
+    yamz.afterSwipe = function() {
         delete this._startTouch;
         delete this._lastTouch;
         if (this.active) {

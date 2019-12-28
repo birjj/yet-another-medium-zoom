@@ -1,4 +1,4 @@
-.yamz__img-wrapper--swiping {
+.yamz__wrapper:not(.yamz__wrapper--closing) .yamz__img-wrapper--swiping {
     transition: none !important;
     will-change: transform;
 }
