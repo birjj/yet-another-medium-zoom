@@ -30,7 +30,7 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
     yamz.options = {
         swipeThreshold: window.innerWidth * 0.25,
         swipeResponseLimit: window.innerWidth * 0.05,
-        swipeOnDesktop: true,
+        swipeOnDesktop: false,
         ...yamz.options
     };
 
