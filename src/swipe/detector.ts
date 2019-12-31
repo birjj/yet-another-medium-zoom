@@ -108,6 +108,7 @@ export default class SwipeDetector {
             }
         }
 
+        e.preventDefault(); // stop any scrolling if we are currently swiping
         this.emit("update", { x: xDelta, y: yDelta }, this.state.metadata);
     }
 
