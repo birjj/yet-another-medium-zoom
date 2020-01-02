@@ -37,6 +37,9 @@
         "test:prod": "npm run lint && npm run test -- --no-cache"
     },
     "jest": {
+        "setupFilesAfterEnv": [
+            "<rootDir>/test/setup.ts"
+        ],
         "transform": {
             ".(ts|tsx)": "ts-jest"
         },
@@ -48,7 +51,7 @@
             "js"
         ],
         "moduleNameMapper": {
-            "\\.css$": "<rootDir>/test/__mocks__/styleMock.js"
+            "\\.css$": "<rootDir>/test/__mocks__/styleMock.ts"
         },
         "coveragePathIgnorePatterns": [
             "/node_modules/",
@@ -82,10 +85,11 @@
         ]
     },
     "devDependencies": {
-        "@types/jest": "^23.3.2",
+        "@testing-library/jest-dom": "^4.2.4",
+        "@types/jest": "^24.0.25",
         "@types/node": "^10.11.0",
         "husky": "^3.0.3",
-        "jest": "^23.6.0",
+        "jest": "^24.9.0",
         "lint-staged": "^9.2.1",
         "prettier": "^1.14.3",
         "rimraf": "^2.6.2",
@@ -96,7 +100,7 @@
         "rollup-plugin-postcss": "^2.0.3",
         "rollup-plugin-sourcemaps": "^0.4.2",
         "rollup-plugin-typescript2": "^0.18.0",
-        "ts-jest": "^23.10.2",
+        "ts-jest": "^24.2.0",
         "ts-node": "^7.0.1",
         "tslint": "^5.11.0",
         "tslint-config-prettier": "^1.15.0",

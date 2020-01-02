@@ -52,8 +52,13 @@ export function getHighestFromSrcSet(srcset: string, targetWidth=document.body.c
 
     return parsed.reduce((prev, entry) => {
         if (!entry) { return prev; }
+        if (!prev) { return entry; }
         // if we've already found a smaller image that is bigger than the screen, use that image instead
-        if (prev && entry.width > prev.width && prev.width >= targetWidth) {
+        if (entry.width > prev.width && prev.width >= targetWidth) {
+            return prev;
+        }
+        // if the one we've found is smaller than the previously found, only use it if it's bigger than targetWidth
+        if (entry.width < prev.width && entry.width < targetWidth) {
             return prev;
         }
         return entry;
