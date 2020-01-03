@@ -132,7 +132,7 @@ interface Snapshot {
     height: number,
 };
 
-function getSnapshot($elm: HTMLElement): Snapshot {
+export function getSnapshot($elm: HTMLElement): Snapshot {
     const outp = {
         width: $elm.offsetWidth,
         height: $elm.offsetHeight,
