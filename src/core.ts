@@ -175,7 +175,7 @@ export class MediumLightboxCore {
      * This also handles loading the highres and stuff.
      * If you're only looking for generating the DOM (e.g. if you're creating a custom lightbox generator), use .defaultLightboxGenerator
      */
-    generateLightbox($img: HTMLPictureElement|HTMLImageElement, opts: GlobalOptions&ImageOptions): { $img: HTMLPictureElement|HTMLImageElement, $copiedImg: HTMLImageElement, $lightbox: HTMLElement, origSrc: string } {
+    generateLightbox($img: HTMLPictureElement|HTMLImageElement, opts: GlobalOptions&ImageOptions): { $img: HTMLPictureElement|HTMLImageElement, $copiedImg: HTMLImageElement, $lightbox: HTMLElement, origSrc: string, $highRes?: HTMLImageElement } {
         const generator = opts.lightboxGenerator || this.defaultLightboxGenerator;
         const origSrc = getSrcFromImage($img);
         const hasSrcSet = ($img instanceof HTMLPictureElement) || $img.srcset;
@@ -198,12 +198,13 @@ export class MediumLightboxCore {
 
         // and start loading high-res if we need to
         // start loading the highres version if we have one
+        let $highRes: HTMLImageElement|undefined;
         if (opts.highres) {
-            const $highRes = new Image();
+            $highRes = new Image();
             $highRes.decoding = "async";
             $highRes.addEventListener("load", () => {
                 if (this.active && this.active.$img === $img) {
-                    this._highResLoaded($highRes);
+                    this._highResLoaded($highRes as HTMLImageElement);
                 }
             });
             $highRes.addEventListener("error", e => {
@@ -222,7 +223,8 @@ export class MediumLightboxCore {
             $img,
             $copiedImg,
             $lightbox,
-            origSrc
+            origSrc,
+            $highRes,
         };
     }
 

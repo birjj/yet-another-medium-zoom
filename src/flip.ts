@@ -12,6 +12,7 @@ export default class FLIPElement {
     _elmPos?: Snapshot;
     _target$Elm?: HTMLElement;
     _playResolver?: (val?: unknown) => void;
+    _transitionFallback?: number;
 
     constructor($elm: HTMLElement) {
         this.$elm = $elm;
@@ -25,6 +26,7 @@ export default class FLIPElement {
 
         elmMap.set($elm, this);
         this._onTransitionEnd = this._onTransitionEnd.bind(this);
+        this.stop = this.stop.bind(this);
     }
 
     first($elm: HTMLElement = this.$elm) {
@@ -73,6 +75,8 @@ export default class FLIPElement {
 
         $elm.addEventListener("transitioncancel", this._onTransitionEnd);
         $elm.addEventListener("transitionend", this._onTransitionEnd);
+        clearTimeout(this._transitionFallback);
+        this._transitionFallback = setTimeout(this.stop, duration + 50) as unknown as number;
 
         return new Promise((res, rej) => {
             this._playResolver = res;
@@ -80,6 +84,7 @@ export default class FLIPElement {
     }
 
     stop() {
+        clearTimeout(this._transitionFallback);
         if (this._target$Elm) {
             this._target$Elm.removeEventListener("transitioncancel", this._onTransitionEnd);
             this._target$Elm.removeEventListener("transitionend", this._onTransitionEnd);
