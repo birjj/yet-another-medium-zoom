@@ -3,31 +3,43 @@ import { Classes, YamzPlugin } from "../types";
 import "./album.css";
 
 export interface Albumed<Yamz extends MediumLightboxCore> {
-    moveToAlbumEntry: (entry: AlbumEntry<Yamz>, direction: "next"|"prev") => void,
-};
+    moveToAlbumEntry: (entry: AlbumEntry<Yamz>, direction: "next" | "prev") => void;
+}
 
 export interface AlbumOptions<Yamz extends MediumLightboxCore> {
-    album?: AlbumEntry<Yamz>[],
-    wrapAlbum?: boolean,
-};
+    album?: AlbumEntry<Yamz>[];
+    wrapAlbum?: boolean;
+}
 
 export interface AlbumEntry<Yamz extends MediumLightboxCore> {
-    img: HTMLElement,
-    opts?: ReturnType<Yamz["optsFromElm"]> & AlbumOptions<Yamz>,
-};
+    img: HTMLElement;
+    opts?: ReturnType<Yamz["optsFromElm"]> & AlbumOptions<Yamz>;
+}
 
 /** Augments the YAMZ instance to support albums */
 export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: YamzType) {
     const { defaultLightboxGenerator, optsFromElm, onKeyDown } = _yamz;
-    const yamz = _yamz as YamzPlugin<YamzType, Albumed<YamzType>, AlbumOptions<YamzType>, AlbumOptions<YamzType>>;
+    const yamz = _yamz as YamzPlugin<
+        YamzType,
+        Albumed<YamzType>,
+        AlbumOptions<YamzType>,
+        AlbumOptions<YamzType>
+    >;
 
     yamz.options = {
         wrapAlbum: false,
         ...yamz.options,
     };
 
-    function augmentLightbox(yamz: Albumed<YamzType>, $lightbox: HTMLElement, opts: AlbumOptions<YamzType>, index: number) {
-        if (!opts.album) { return $lightbox; }
+    function augmentLightbox(
+        yamz: Albumed<YamzType>,
+        $lightbox: HTMLElement,
+        opts: AlbumOptions<YamzType>,
+        index: number
+    ) {
+        if (!opts.album) {
+            return $lightbox;
+        }
         const prevIndex = opts.wrapAlbum
             ? (opts.album.length + index - 1) % opts.album.length
             : index - 1;
@@ -39,7 +51,9 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
             const $prev = document.createElement("button");
             $prev.classList.add(Classes.ALBUM_PREV);
             $prev.addEventListener("click", e => {
-                if (!opts.album) { return; }
+                if (!opts.album) {
+                    return;
+                }
                 e.stopPropagation();
                 yamz.moveToAlbumEntry(opts.album[prevIndex], "prev");
             });
@@ -49,7 +63,9 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
             const $next = document.createElement("button");
             $next.classList.add(Classes.ALBUM_NEXT);
             $next.addEventListener("click", e => {
-                if (!opts.album) { return; }
+                if (!opts.album) {
+                    return;
+                }
                 e.stopPropagation();
                 yamz.moveToAlbumEntry(opts.album[nextIndex], "next");
             });
@@ -74,11 +90,13 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
         type outpType = ReturnType<YamzType["optsFromElm"]> & AlbumOptions<YamzType>;
         const outp: outpType = optsFromElm($elm) as outpType;
         if ($elm.dataset.album) {
-            const $siblings = Array.from(document.querySelectorAll(`[data-album="${$elm.dataset.album}"]`)) as HTMLElement[];
+            const $siblings = Array.from(
+                document.querySelectorAll(`[data-album="${$elm.dataset.album}"]`)
+            ) as HTMLElement[];
             outp.album = $siblings.map($sibling => {
                 return {
                     img: $sibling,
-                    opts: optsFromElm($sibling)
+                    opts: optsFromElm($sibling),
                 };
             }) as AlbumEntry<YamzType>[];
             // make sure each entry knows about which album it's in
@@ -93,25 +111,34 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
     };
 
     // add new method for moving to an album entry
-    yamz.moveToAlbumEntry = function(entry: AlbumEntry<YamzType>, direction: "next"|"prev") {
-        if (!this.active) { return; }
-        const $target = this.active.$lightbox.querySelector(`.${Classes.IMG_WRAPPER}`) as HTMLElement;
+    yamz.moveToAlbumEntry = function(entry: AlbumEntry<YamzType>, direction: "next" | "prev") {
+        if (!this.active) {
+            return;
+        }
+        const $target = this.active.$lightbox.querySelector(
+            `.${Classes.IMG_WRAPPER}`
+        ) as HTMLElement;
         if (!$target) {
             throw new ReferenceError("Could not find image wrapper in lightbox");
         }
         const directions = {
             out: direction === "next" ? "left" : "right",
-            in: direction === "next" ? "right" : "left"
+            in: direction === "next" ? "right" : "left",
         };
         let replaced = false;
         const _onAnimEnd = () => {
-            if (replaced || !this.active) { return; }
+            if (replaced || !this.active) {
+                return;
+            }
             replaced = true;
             this.replace(entry.img, entry.opts);
-            const $newTarget = this.active.$lightbox.querySelector(`.${Classes.IMG_WRAPPER}`) as HTMLElement;
-            if (!$newTarget) { return; }
+            const $newTarget = this.active.$lightbox.querySelector(
+                `.${Classes.IMG_WRAPPER}`
+            ) as HTMLElement;
+            if (!$newTarget) {
+                return;
+            }
             $newTarget.classList.add(`${Classes.IMG_WRAPPER}--in-${directions.in}`);
-
         };
 
         setTimeout(_onAnimEnd, 1000); // fail safe if for whatever reason animation doesn't play
@@ -123,9 +150,13 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
     // finally extend the keyboard interactivity
     yamz.onKeyDown = function(e: KeyboardEvent) {
         onKeyDown.call(this, e);
-        if (!this.active) { return; }
+        if (!this.active) {
+            return;
+        }
         const opts = this.active.options as AlbumOptions<YamzType>;
-        if (!opts.album) { return; }
+        if (!opts.album) {
+            return;
+        }
 
         // move back/forward in album when pressing arrow keys
         if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
@@ -137,9 +168,7 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
             const nextIndex = opts.wrapAlbum
                 ? (opts.album.length + index + 1) % opts.album.length
                 : index + 1;
-            const targetIndex = e.key === "ArrowLeft"
-                ? prevIndex
-                : nextIndex;
+            const targetIndex = e.key === "ArrowLeft" ? prevIndex : nextIndex;
 
             if (targetIndex >= 0 && targetIndex < opts.album.length) {
                 (this as Albumed<YamzType>).moveToAlbumEntry(
@@ -151,4 +180,4 @@ export default function withAlbum<YamzType extends MediumLightboxCore>(_yamz: Ya
     };
 
     return yamz;
-};
+}

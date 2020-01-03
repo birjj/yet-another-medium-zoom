@@ -2,11 +2,11 @@ import { MediumLightboxCore } from "../core";
 import { Classes, YamzPlugin } from "../types";
 import "./caption.css";
 
-export interface Captioned {};
+export interface Captioned {}
 
 export interface CaptionOptions {
-    caption?: string | HTMLElement,
-};
+    caption?: string | HTMLElement;
+}
 
 /** Augments the YAMZ instance to support captions */
 export default function withCaption<YamzType extends MediumLightboxCore>(_yamz: YamzType) {
@@ -37,9 +37,11 @@ export default function withCaption<YamzType extends MediumLightboxCore>(_yamz: 
     yamz.optsFromElm = function($elm: HTMLElement) {
         type outpType = ReturnType<YamzType["optsFromElm"]> & CaptionOptions;
         const outp: outpType = optsFromElm.call(this, $elm) as outpType;
-        if ($elm.dataset.caption) { outp.caption = $elm.dataset.caption; }
+        if ($elm.dataset.caption) {
+            outp.caption = $elm.dataset.caption;
+        }
         return outp;
     };
 
     return yamz;
-};
+}

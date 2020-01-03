@@ -4,7 +4,11 @@ import FLIP from "../src/flip";
 jest.mock("../src/flip", () => {
     const flipModule = jest.genMockFromModule("../src/flip") as any;
     for (let method of ["first", "last", "invert", "play"]) {
-        flipModule.default.prototype[method as "first"|"last"|"invert"|"play"] = jest.fn(function(this: any){ return this; });
+        flipModule.default.prototype[method as "first" | "last" | "invert" | "play"] = jest.fn(
+            function(this: any) {
+                return this;
+            }
+        );
     }
     return flipModule;
 });
@@ -19,10 +23,15 @@ const DEFAULTS = {
 beforeEach(() => {
     mocked(FLIP).mockClear();
 });
-function dispatchEvent<EventConstructor extends new (a:string,b?:object) => Event>(E: EventConstructor, type: string, opts?: ConstructorParameters<EventConstructor>[1], target: HTMLElement|Document|Window = document) {
+function dispatchEvent<EventConstructor extends new (a: string, b?: object) => Event>(
+    E: EventConstructor,
+    type: string,
+    opts?: ConstructorParameters<EventConstructor>[1],
+    target: HTMLElement | Document | Window = document
+) {
     const ev = new E(type, {
         bubbles: true,
-        ...opts
+        ...opts,
     });
     target.dispatchEvent(ev);
 }
@@ -78,12 +87,15 @@ describe("MediumLightboxCore", () => {
             const inst = createInstance();
             const opts = { duration: 500 };
             await inst.open($img, opts);
-            if (!inst._flip || !inst.active) { // make TS happy
+            if (!inst._flip || !inst.active) {
+                // make TS happy
                 throw new Error("._flip or .active weren't found on instance");
             }
             expect(mocked(inst._flip.first)).toHaveBeenCalledWith($img);
             expect(mocked(inst._flip.last)).toHaveBeenCalledWith(inst.active.$copiedImg);
-            expect(mocked(inst._flip.invert)).toHaveBeenCalledWith(inst.active.$copiedImg.parentElement);
+            expect(mocked(inst._flip.invert)).toHaveBeenCalledWith(
+                inst.active.$copiedImg.parentElement
+            );
             expect(mocked(inst._flip.play)).toHaveBeenCalledWith(opts.duration);
         });
     });
@@ -120,12 +132,15 @@ describe("MediumLightboxCore", () => {
             const inst = createInstance();
             const opts = { duration: 500 };
             await inst.open($img, opts);
-            if (!inst._flip || !inst.active) { // make TS happy
+            if (!inst._flip || !inst.active) {
+                // make TS happy
                 throw new Error("._flip or .active weren't found on instance");
             }
             expect(mocked(inst._flip.first)).toHaveBeenCalledWith($img);
             expect(mocked(inst._flip.last)).toHaveBeenCalledWith(inst.active.$copiedImg);
-            expect(mocked(inst._flip.invert)).toHaveBeenCalledWith(inst.active.$copiedImg.parentElement);
+            expect(mocked(inst._flip.invert)).toHaveBeenCalledWith(
+                inst.active.$copiedImg.parentElement
+            );
             expect(mocked(inst._flip.play)).toHaveBeenCalledWith(opts.duration);
         });
     });
@@ -167,7 +182,7 @@ describe("MediumLightboxCore", () => {
             const opts = {
                 highres: "invalid",
                 scrollAllowance: 150,
-                duration: 500
+                duration: 500,
             };
             const inst = createInstance();
             inst.open($img);
@@ -184,7 +199,7 @@ describe("MediumLightboxCore", () => {
             const opts = {
                 highres: "invalid",
                 scrollAllowance: 150,
-                duration: 500
+                duration: 500,
             };
             const inst = createInstance();
 
@@ -205,7 +220,8 @@ describe("MediumLightboxCore", () => {
             const inst = createInstance();
             const opts = { duration: 500 };
             inst.open($img, opts);
-            if (!inst._flip || !inst.active) { // make TS happy
+            if (!inst._flip || !inst.active) {
+                // make TS happy
                 throw new Error("._flip or .active weren't found on instance");
             }
             const $lowresCopy = inst.active.$copiedImg;
@@ -213,7 +229,11 @@ describe("MediumLightboxCore", () => {
             const $highres = document.createElement("img");
             $highres.src = "https://google.dk";
             inst._highResLoaded($highres);
-            expect(mocked(inst._flip.update)).toHaveBeenCalledWith($lowresCopy.parentElement, expect.any(Function), opts.duration);
+            expect(mocked(inst._flip.update)).toHaveBeenCalledWith(
+                $lowresCopy.parentElement,
+                expect.any(Function),
+                opts.duration
+            );
         });
 
         it("plays a new FLIP animation if it is open", async () => {
@@ -222,7 +242,8 @@ describe("MediumLightboxCore", () => {
             const inst = createInstance();
             const opts = { duration: 500 };
             await inst.open($img, opts);
-            if (!inst._flip || !inst.active) { // make TS happy
+            if (!inst._flip || !inst.active) {
+                // make TS happy
                 throw new Error("._flip or .active weren't found on instance");
             }
             const $lowresCopy = inst.active.$copiedImg;
@@ -233,7 +254,9 @@ describe("MediumLightboxCore", () => {
 
             expect(mocked(inst._flip.first)).toHaveBeenCalledWith($lowresCopy);
             expect(mocked(inst._flip.last)).toHaveBeenCalledWith(inst.active.$copiedImg);
-            expect(mocked(inst._flip.invert)).toHaveBeenCalledWith(inst.active.$copiedImg.parentElement);
+            expect(mocked(inst._flip.invert)).toHaveBeenCalledWith(
+                inst.active.$copiedImg.parentElement
+            );
             expect(mocked(inst._flip.play)).toHaveBeenCalledWith(opts.duration);
         });
     });
@@ -242,12 +265,12 @@ describe("MediumLightboxCore", () => {
         it("parses all supported options correctly", () => {
             const $img = document.createElement("img");
             const opts = {
-                class: `class-${Math.floor(Math.random()*1000)}`,
+                class: `class-${Math.floor(Math.random() * 1000)}`,
                 duration: 1234,
                 highres: "https://google.com",
-                scrollAllowance: 4321
+                scrollAllowance: 4321,
             };
-            for(let k in opts) {
+            for (let k in opts) {
                 const key = k as keyof (typeof opts);
                 $img.dataset[key] = opts[key].toString();
             }
@@ -281,7 +304,7 @@ describe("MediumLightboxCore", () => {
 
         it("supports CSS selectors", () => {
             const $img = document.createElement("img");
-            const className = `class-${Math.floor(Math.random()*1000)}`;
+            const className = `class-${Math.floor(Math.random() * 1000)}`;
             $img.classList.add(className);
             document.body.appendChild($img);
             const spy = jest.spyOn($img, "addEventListener");
@@ -349,15 +372,11 @@ describe("MediumLightboxCore", () => {
             const inst = createInstance();
             await inst.open($img);
             inst.close = jest.fn();
-            dispatchEvent(
-                KeyboardEvent,
-                "keydown",
-                {
-                    key: "Escape"
-                }
-            );
+            dispatchEvent(KeyboardEvent, "keydown", {
+                key: "Escape",
+            });
 
             expect(inst.close).toHaveBeenCalled();
         });
     });
-})
+});

@@ -4,33 +4,44 @@ import { ImageOptions, Classes } from "./types";
  * Creates an image for use in the lightbox based on an input element.
  * Always returns an <img>, regardless of the input element.
  */
-export function generateLightboxImg($img: HTMLPictureElement|HTMLImageElement, newSrc?: string): HTMLImageElement {
+export function generateLightboxImg(
+    $img: HTMLPictureElement | HTMLImageElement,
+    newSrc?: string
+): HTMLImageElement {
     const $newImg = document.createElement("img");
-    const src = newSrc
-        ? newSrc
-        : getSrcFromImage($img);
+    const src = newSrc ? newSrc : getSrcFromImage($img);
     $newImg.src = src;
 
     return $newImg;
 }
 
-export function isValidImage($elm: HTMLElement): $elm is HTMLImageElement|HTMLPictureElement {
+export function isValidImage($elm: HTMLElement): $elm is HTMLImageElement | HTMLPictureElement {
     const types = [HTMLPictureElement, HTMLImageElement];
     return types.some(type => $elm instanceof type);
 }
 
-export function getHighResFromImage($image: HTMLImageElement|HTMLPictureElement, targetWidth=document.body.clientWidth): string {
+export function getHighResFromImage(
+    $image: HTMLImageElement | HTMLPictureElement,
+    targetWidth = document.body.clientWidth
+): string {
     let cur = { width: $image.offsetWidth, src: getSrcFromImage($image) };
-    const $targets = $image instanceof HTMLImageElement
-        ? [$image]
-        : Array.from($image.querySelectorAll("source"));
-    $targets.forEach(($target: HTMLImageElement|HTMLSourceElement) => {
+    const $targets =
+        $image instanceof HTMLImageElement
+            ? [$image]
+            : Array.from($image.querySelectorAll("source"));
+    $targets.forEach(($target: HTMLImageElement | HTMLSourceElement) => {
         // ignore sources that don't match
-        if ($target instanceof HTMLSourceElement && $target.media && !matchMedia($target.media).matches) {
+        if (
+            $target instanceof HTMLSourceElement &&
+            $target.media &&
+            !matchMedia($target.media).matches
+        ) {
             return;
         }
         // extract size and URL from srcset
-        if (!$target.srcset) { return; }
+        if (!$target.srcset) {
+            return;
+        }
         const srcset = $target.srcset;
         const parsed = getHighestFromSrcSet(srcset, targetWidth);
         if (parsed && parsed.width > cur.width) {
@@ -40,10 +51,12 @@ export function getHighResFromImage($image: HTMLImageElement|HTMLPictureElement,
     return cur.src;
 }
 
-export function getHighestFromSrcSet(srcset: string, targetWidth=document.body.clientWidth) {
+export function getHighestFromSrcSet(srcset: string, targetWidth = document.body.clientWidth) {
     const parsed = srcset.split(",").map(entry => {
         const widthMatch = /([^ ]+) +(\d+)w$/.exec(entry.trim());
-        if (!widthMatch) { return null; }
+        if (!widthMatch) {
+            return null;
+        }
         return {
             src: widthMatch[1],
             width: +widthMatch[2],
@@ -51,8 +64,12 @@ export function getHighestFromSrcSet(srcset: string, targetWidth=document.body.c
     });
 
     return parsed.reduce((prev, entry) => {
-        if (!entry) { return prev; }
-        if (!prev) { return entry; }
+        if (!entry) {
+            return prev;
+        }
+        if (!prev) {
+            return entry;
+        }
         // if we've already found a smaller image that is bigger than the screen, use that image instead
         if (entry.width > prev.width && prev.width >= targetWidth) {
             return prev;
@@ -63,16 +80,16 @@ export function getHighestFromSrcSet(srcset: string, targetWidth=document.body.c
         }
         return entry;
     }, null);
-};
+}
 
 export function getSrcFromImage($elm: HTMLImageElement | HTMLPictureElement): string {
     if ($elm instanceof HTMLImageElement) {
-        return $elm.currentSrc || /* IE11 support */$elm.src;
+        return $elm.currentSrc || /* IE11 support */ $elm.src;
     }
     if ($elm instanceof HTMLPictureElement) {
         const $img = $elm.querySelector("img");
         if ($img) {
-            return $img.currentSrc || /* IE11 support */$img.src;
+            return $img.currentSrc || /* IE11 support */ $img.src;
         }
     }
     return "";
@@ -84,7 +101,11 @@ export function getScrollPosition(horizontal: boolean = false): number {
         : window.scrollY || document.body.scrollTop || document.documentElement.scrollTop || 0;
 }
 
-export function defaultLightboxGenerator($copiedImg: HTMLElement, opts: ImageOptions, $original: HTMLElement) {
+export function defaultLightboxGenerator(
+    $copiedImg: HTMLElement,
+    opts: ImageOptions,
+    $original: HTMLElement
+) {
     const $wrapper = document.createElement("aside");
     $wrapper.classList.add(Classes.WRAPPER);
     if (opts.class) {

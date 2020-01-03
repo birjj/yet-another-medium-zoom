@@ -2,21 +2,26 @@
 import FLIPElement, { getSnapshot } from "../src/flip";
 import { mocked } from "ts-jest/utils";
 
-function applyProperties(target: object, values: {[k:string]:any}) {
-    const props = Object.keys(values).reduce((outp: {[k:string]:any}, key) => {
+function applyProperties(target: object, values: { [k: string]: any }) {
+    const props = Object.keys(values).reduce((outp: { [k: string]: any }, key) => {
         outp[key] = { value: values[key], configurable: true };
         return outp;
     }, {});
     Object.defineProperties(target, props);
 }
-function getInverted(widthScale: number, heightScale: number, leftChange: number, topChange: number) {
+function getInverted(
+    widthScale: number,
+    heightScale: number,
+    leftChange: number,
+    topChange: number
+) {
     const $elm = document.createElement("div");
     const flip = new FLIPElement($elm);
     const pos = {
         offsetLeft: 0,
         offsetTop: 0,
         offsetWidth: 100,
-        offsetHeight: 100
+        offsetHeight: 100,
     };
     applyProperties($elm, pos);
     flip.first($elm);
@@ -24,7 +29,7 @@ function getInverted(widthScale: number, heightScale: number, leftChange: number
         offsetLeft: pos.offsetLeft + leftChange,
         offsetTop: pos.offsetTop + topChange,
         offsetWidth: pos.offsetWidth * widthScale,
-        offsetHeight: pos.offsetHeight * heightScale
+        offsetHeight: pos.offsetHeight * heightScale,
     });
     flip.last().invert();
 
@@ -42,19 +47,31 @@ describe("FLIPElement", () => {
     describe("invert()", () => {
         it("correctly inverts translations", () => {
             const { $elm } = getInverted(1, 1, 50, -50);
-            expect($elm).toHaveStyle(`transform: translate(${(-50).toFixed(5)}px, ${(50).toFixed(5)}px) scale(${(1).toFixed(5)}, ${(1).toFixed(5)})`);
+            expect($elm).toHaveStyle(
+                `transform: translate(${(-50).toFixed(5)}px, ${(50).toFixed(
+                    5
+                )}px) scale(${(1).toFixed(5)}, ${(1).toFixed(5)})`
+            );
         });
 
         it("correctly inverts scales", () => {
             const { $elm } = getInverted(0.5, 2, 0, 0);
             // it is assumed that transform-origin is center, so scaling moves the corners - that's why translation also happens
-            expect($elm).toHaveStyle(`transform: translate(${(25).toFixed(5)}px, ${(-50).toFixed(5)}px) scale(${(2).toFixed(5)}, ${(0.5).toFixed(5)})`);
+            expect($elm).toHaveStyle(
+                `transform: translate(${(25).toFixed(5)}px, ${(-50).toFixed(
+                    5
+                )}px) scale(${(2).toFixed(5)}, ${(0.5).toFixed(5)})`
+            );
         });
 
         it("correctly inverts combined translation and scale", () => {
             const { $elm, flip } = getInverted(0.5, 2, 50, -50);
             // it is assumed that transform-origin is center, so scaling moves the corners - that's why translation also happens
-            expect($elm).toHaveStyle(`transform: translate(${(-25).toFixed(5)}px, ${(0).toFixed(5)}px) scale(${(2).toFixed(5)}, ${(0.5).toFixed(5)})`);
+            expect($elm).toHaveStyle(
+                `transform: translate(${(-25).toFixed(5)}px, ${(0).toFixed(
+                    5
+                )}px) scale(${(2).toFixed(5)}, ${(0.5).toFixed(5)})`
+            );
         });
     });
 
@@ -76,7 +93,7 @@ describe("FLIPElement", () => {
             const duration = 500;
             const promise = flip.play(duration);
             jest.advanceTimersByTime(duration + 100);
-            expect(promise).resolves.toBeUndefined();;
+            expect(promise).resolves.toBeUndefined();
             jest.useRealTimers();
         });
     });
@@ -111,7 +128,10 @@ describe("FLIPElement", () => {
             jest.useFakeTimers();
             flip.stop = jest.fn();
             const promise = flip.play(500);
-            flip._onTransitionEnd({ propertyName: "transform", target: $elm } as unknown as TransitionEvent);
+            flip._onTransitionEnd(({
+                propertyName: "transform",
+                target: $elm,
+            } as unknown) as TransitionEvent);
             expect(flip.stop).toHaveBeenCalled();
             jest.useRealTimers();
         });
@@ -125,16 +145,16 @@ describe("getSnapshot()", () => {
             offsetLeft: 50,
             offsetTop: -50,
             offsetWidth: 50,
-            offsetHeight: 200
+            offsetHeight: 200,
         };
         applyProperties($elm, props);
 
         const snapshot = getSnapshot($elm);
         expect(snapshot).toEqual({
-            left: props.offsetLeft + (props.offsetWidth/2),
-            top: props.offsetTop + (props.offsetHeight/2),
+            left: props.offsetLeft + props.offsetWidth / 2,
+            top: props.offsetTop + props.offsetHeight / 2,
             width: props.offsetWidth,
-            height: props.offsetHeight
+            height: props.offsetHeight,
         });
     });
 
@@ -147,16 +167,16 @@ describe("getSnapshot()", () => {
             offsetTop: -50,
             offsetWidth: 50,
             offsetHeight: 200,
-            offsetParent: $parent
+            offsetParent: $parent,
         };
         applyProperties($elm, props);
 
         const snapshot = getSnapshot($elm);
         expect(snapshot).toEqual({
-            left: props.offsetLeft + 10 + (props.offsetWidth/2),
-            top: props.offsetTop - 10 + (props.offsetHeight/2),
+            left: props.offsetLeft + 10 + props.offsetWidth / 2,
+            top: props.offsetTop - 10 + props.offsetHeight / 2,
             width: props.offsetWidth,
-            height: props.offsetHeight
+            height: props.offsetHeight,
         });
     });
 
@@ -167,20 +187,20 @@ describe("getSnapshot()", () => {
             offsetLeft: 0,
             offsetTop: 0,
             offsetWidth: 50,
-            offsetHeight: 200
+            offsetHeight: 200,
         };
         applyProperties(window, {
             scrollX: 250,
-            scrollY: 500
+            scrollY: 500,
         });
         applyProperties($elm, props);
 
         const snapshot = getSnapshot($elm);
         expect(snapshot).toEqual({
-            left: props.offsetLeft + 250 + (props.offsetWidth/2),
-            top: props.offsetTop + 500 + (props.offsetHeight/2),
+            left: props.offsetLeft + 250 + props.offsetWidth / 2,
+            top: props.offsetTop + 500 + props.offsetHeight / 2,
             width: props.offsetWidth,
-            height: props.offsetHeight
+            height: props.offsetHeight,
         });
     });
 });

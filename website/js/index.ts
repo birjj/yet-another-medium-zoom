@@ -11,9 +11,15 @@ import { CaptionOptions } from "../../src/caption/caption";
  * @param $original A reference to the <img> or <picture> that the lightbox represents
  * @returns {HTMLElement} The generated lightbox DOM element
  */
-function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions, $original: HTMLElement) {
+function customLightboxGenerator(
+    $img: HTMLImageElement,
+    opts: ImageOptions,
+    $original: HTMLElement
+) {
     const $lightbox = yamz.defaultLightboxGenerator($img, opts, $original);
-    if (!$original.dataset.customLayout) { return $lightbox; }
+    if (!$original.dataset.customLayout) {
+        return $lightbox;
+    }
     $lightbox.classList.add("custom");
 
     // our custom layout has a left/right seperation; generate the two containers
@@ -28,7 +34,11 @@ function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions, $or
     const $description = document.createElement("p");
     $description.appendChild(document.createTextNode("This lightbox has a custom DOM structure."));
     $description.appendChild(document.createElement("br"));
-    $description.appendChild(document.createTextNode("The animation automatically adapts so it matches the new location of the image."));
+    $description.appendChild(
+        document.createTextNode(
+            "The animation automatically adapts so it matches the new location of the image."
+        )
+    );
     // and make sure we move the caption into the right side
     const $caption = $lightbox.querySelector(".yamz__caption");
     if ($caption) {
@@ -43,10 +53,12 @@ function customLightboxGenerator($img: HTMLImageElement, opts: ImageOptions, $or
 }
 yamz.setOptions({
     lightboxGenerator: customLightboxGenerator,
-    wrapAlbum: true
+    wrapAlbum: true,
 });
 
-const $imgs = Array.from(document.querySelectorAll("*:not(picture) > img, picture")) as HTMLElement[];
+const $imgs = Array.from(
+    document.querySelectorAll("*:not(picture) > img, picture")
+) as HTMLElement[];
 $imgs.forEach($img => {
     const opts: CaptionOptions = {};
 
@@ -62,7 +74,8 @@ $imgs.forEach($img => {
         $link.target = "_blank";
         $link.rel = "noreferrer noopener";
         $link.textContent = `${$img.dataset.unsplashAuthor} at Unsplash`;
-        $link.addEventListener("click", e => { // stop lightbox from closing when pressing the link
+        $link.addEventListener("click", e => {
+            // stop lightbox from closing when pressing the link
             e.stopPropagation();
         });
         $caption.appendChild($link);

@@ -5,7 +5,7 @@ import {
     getSrcFromImage,
     getHighResFromImage,
     generateLightboxImg,
-    getScrollPosition
+    getScrollPosition,
 } from "./dom";
 import FLIPElement from "./flip";
 import "./style.css";
@@ -22,7 +22,15 @@ export class MediumLightboxCore {
         ...DEFAULT_OPTS,
     };
     state: STATES = STATES.Closed;
-    active?: { $lightbox: HTMLElement, $img: HTMLElement, $copiedImg: HTMLImageElement, $highRes?: HTMLImageElement, scrollPos: number, origSrc?: string, options: ImageOptions } = undefined;
+    active?: {
+        $lightbox: HTMLElement;
+        $img: HTMLElement;
+        $copiedImg: HTMLImageElement;
+        $highRes?: HTMLImageElement;
+        scrollPos: number;
+        origSrc?: string;
+        options: ImageOptions;
+    } = undefined;
     _flip?: FLIPElement;
 
     _raf: boolean = false;
@@ -40,17 +48,23 @@ export class MediumLightboxCore {
         };
     }
     /** Get the currently set global options */
-    getOptions() { return this.options; }
+    getOptions() {
+        return this.options;
+    }
 
     /** Open a specific image in the lightbox */
     async open($img: YamzElement, opts?: ImageOptions): Promise<HTMLElement> {
-        if (!isValidImage($img)) { throw new TypeError(`${$img} cannot be used as an image`); }
-        if (this.active) { await this.close(); }
+        if (!isValidImage($img)) {
+            throw new TypeError(`${$img} cannot be used as an image`);
+        }
+        if (this.active) {
+            await this.close();
+        }
 
         const options = {
             ...this.options,
             ...($img.yamzOpts || {}),
-            ...(opts || {})
+            ...(opts || {}),
         };
 
         // generate our lightbox
@@ -58,7 +72,7 @@ export class MediumLightboxCore {
         this.active = {
             ...this.generateLightbox($img, options),
             options,
-            scrollPos: getScrollPosition()
+            scrollPos: getScrollPosition(),
         };
 
         // then insert and animate it
@@ -67,12 +81,13 @@ export class MediumLightboxCore {
         const $animElm = this.active.$copiedImg.parentElement || this.active.$copiedImg;
         if (options.duration > 0) {
             this._flip = new FLIPElement($img);
-            await this._flip.first($img)
+            await this._flip
+                .first($img)
                 .last(this.active.$copiedImg)
                 .invert($animElm)
                 .play(options.duration);
         }
-        this.state = STATES.Open
+        this.state = STATES.Open;
 
         this.attachListeners();
 
@@ -81,9 +96,15 @@ export class MediumLightboxCore {
 
     /** Close the currently active image. If img is given, only closes if that's the currently active img */
     async close($img?: YamzElement): Promise<void> {
-        if (!this.active) { return; }
-        if ($img && this.active.$img !== $img) { return; }
-        if (!$img) { $img = this.active.$img; }
+        if (!this.active) {
+            return;
+        }
+        if ($img && this.active.$img !== $img) {
+            return;
+        }
+        if (!$img) {
+            $img = this.active.$img;
+        }
 
         this.detachListeners();
 
@@ -94,11 +115,9 @@ export class MediumLightboxCore {
         const $animElm = this.active.$copiedImg.parentElement || this.active.$copiedImg;
         if (options.duration) {
             const flip = new FLIPElement($img);
-            flip.first(this.active.$copiedImg)
-                .last(this.active.$img);
+            flip.first(this.active.$copiedImg).last(this.active.$img);
 
-            await flip.invert($animElm)
-                .play(options.duration);
+            await flip.invert($animElm).play(options.duration);
         }
         active.$img.classList.remove(Classes.ORIGINAL_OPEN);
         const $parent = active.$lightbox.parentNode;
@@ -116,8 +135,12 @@ export class MediumLightboxCore {
      * Replaces the currently open lightbox with that of another image, without animating a close/open
      */
     replace($img: YamzElement, opts?: ImageOptions) {
-        if (!isValidImage($img)) { throw new TypeError(`${$img} cannot be used as an image`); }
-        if (!this.active) { return; }
+        if (!isValidImage($img)) {
+            throw new TypeError(`${$img} cannot be used as an image`);
+        }
+        if (!this.active) {
+            return;
+        }
 
         // unhide the original image
         this.active.$img.classList.remove(Classes.ORIGINAL_OPEN);
@@ -127,14 +150,14 @@ export class MediumLightboxCore {
         const nextOpts = {
             ...this.options,
             ...($img.yamzOpts || {}),
-            ...(opts || {})
+            ...(opts || {}),
         };
         const nextActive = this.generateLightbox($img, nextOpts);
         this.active = {
             ...this.active,
             ...nextActive,
             $lightbox: $oldLightbox,
-            options: nextOpts
+            options: nextOpts,
         };
 
         // then update the DOM
@@ -149,7 +172,9 @@ export class MediumLightboxCore {
         if (!$oldLightbox) {
             $oldLightbox = this.active && this.active.$lightbox;
         }
-        if (!$oldLightbox) { return; }
+        if (!$oldLightbox) {
+            return;
+        }
 
         /**
          * We replace the content of the lightbox instead of just replacing the element itself because the open
@@ -175,10 +200,19 @@ export class MediumLightboxCore {
      * This also handles loading the highres and stuff.
      * If you're only looking for generating the DOM (e.g. if you're creating a custom lightbox generator), use .defaultLightboxGenerator
      */
-    generateLightbox($img: HTMLPictureElement|HTMLImageElement, opts: GlobalOptions&ImageOptions): { $img: HTMLPictureElement|HTMLImageElement, $copiedImg: HTMLImageElement, $lightbox: HTMLElement, origSrc: string, $highRes?: HTMLImageElement } {
+    generateLightbox(
+        $img: HTMLPictureElement | HTMLImageElement,
+        opts: GlobalOptions & ImageOptions
+    ): {
+        $img: HTMLPictureElement | HTMLImageElement;
+        $copiedImg: HTMLImageElement;
+        $lightbox: HTMLElement;
+        origSrc: string;
+        $highRes?: HTMLImageElement;
+    } {
         const generator = opts.lightboxGenerator || this.defaultLightboxGenerator;
         const origSrc = getSrcFromImage($img);
-        const hasSrcSet = ($img instanceof HTMLPictureElement) || $img.srcset;
+        const hasSrcSet = $img instanceof HTMLPictureElement || $img.srcset;
 
         // if we weren't explicitly given a highres, try to extract one from the image
         if (!opts.highres && hasSrcSet) {
@@ -198,7 +232,7 @@ export class MediumLightboxCore {
 
         // and start loading high-res if we need to
         // start loading the highres version if we have one
-        let $highRes: HTMLImageElement|undefined;
+        let $highRes: HTMLImageElement | undefined;
         if (opts.highres) {
             $highRes = new Image();
             $highRes.decoding = "async";
@@ -230,17 +264,24 @@ export class MediumLightboxCore {
 
     /** Called when a high-res version of an image has loaded */
     _highResLoaded($highRes: HTMLImageElement) {
-        if (!this.active) { return; }
+        if (!this.active) {
+            return;
+        }
         const $copiedImg = this.active.$copiedImg;
         const $animElm = $copiedImg.parentElement || $copiedImg;
 
         // function that inserts the highres, resizing the img wrapper to the size of the highres
         const updater = () => {
-            if (!this.active) { return; }
+            if (!this.active) {
+                return;
+            }
             if ($copiedImg.parentElement) {
                 this.active.$highRes = $highRes;
                 this.active.$lightbox.classList.add(Classes.HIGHRES_LOADED);
-                $copiedImg.parentElement.insertBefore($highRes, $copiedImg.parentElement.firstChild);
+                $copiedImg.parentElement.insertBefore(
+                    $highRes,
+                    $copiedImg.parentElement.firstChild
+                );
             }
         };
 
@@ -250,7 +291,8 @@ export class MediumLightboxCore {
             this._flip = new FLIPElement(this.active.$img);
             this._flip.first(this.active.$copiedImg);
             updater();
-            this._flip.last(this.active.$copiedImg)
+            this._flip
+                .last(this.active.$copiedImg)
                 .invert($animElm)
                 .play(this.active.options.duration);
         } else {
@@ -262,8 +304,12 @@ export class MediumLightboxCore {
     optsFromElm($elm: HTMLElement): ImageOptions {
         const outp: ImageOptions = {};
 
-        if ($elm.dataset.class) { outp.class = $elm.dataset.class; }
-        if ($elm.dataset.highres) { outp.highres = $elm.dataset.highres; }
+        if ($elm.dataset.class) {
+            outp.class = $elm.dataset.class;
+        }
+        if ($elm.dataset.highres) {
+            outp.highres = $elm.dataset.highres;
+        }
         if ($elm.dataset.duration && !Number.isNaN(+$elm.dataset.duration)) {
             outp.duration = +$elm.dataset.duration;
         }
@@ -289,7 +335,7 @@ export class MediumLightboxCore {
                 // we extract options from the DOM here so that developers can change the data attributes and have it reflected
                 const imgOpts = {
                     ...this.optsFromElm($img),
-                    ...(opts || {})
+                    ...(opts || {}),
                 };
                 this.open($img, imgOpts);
             });
@@ -316,7 +362,9 @@ export class MediumLightboxCore {
 
     /** Helper function used as scroll listener. Debounces calls to .onScroll */
     _onScroll(): void {
-        if (this._raf) { return; }
+        if (this._raf) {
+            return;
+        }
         this._raf = true;
         setTimeout(() => {
             this._raf = false;
@@ -324,8 +372,15 @@ export class MediumLightboxCore {
         }, 60);
     }
     onScroll(): void {
-        if (!this.active) { return; }
-        if (this.active.options.scrollAllowance === undefined || this.active.options.scrollAllowance < 0) { return; }
+        if (!this.active) {
+            return;
+        }
+        if (
+            this.active.options.scrollAllowance === undefined ||
+            this.active.options.scrollAllowance < 0
+        ) {
+            return;
+        }
         const scrollAllowance = this.active.options.scrollAllowance;
         const scrollPos = getScrollPosition();
         const delta = Math.abs(this.active.scrollPos - scrollPos);
@@ -340,7 +395,9 @@ export class MediumLightboxCore {
         this.onKeyDown(e);
     }
     onKeyDown(e: KeyboardEvent) {
-        if (!this.active) { return; }
+        if (!this.active) {
+            return;
+        }
         if (e.key === "Escape") {
             this.close();
         }

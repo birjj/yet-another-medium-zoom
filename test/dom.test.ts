@@ -1,5 +1,12 @@
 ///<reference path="../node_modules/@testing-library/jest-dom/extend-expect.d.ts"/>
-import { defaultLightboxGenerator, getSrcFromImage, getHighestFromSrcSet, isValidImage, generateLightboxImg, getHighResFromImage } from "../src/dom";
+import {
+    defaultLightboxGenerator,
+    getSrcFromImage,
+    getHighestFromSrcSet,
+    isValidImage,
+    generateLightboxImg,
+    getHighResFromImage,
+} from "../src/dom";
 import { Classes } from "../src/types";
 
 describe("generateLightboxImg", () => {
@@ -43,7 +50,7 @@ describe("generateLightboxImg", () => {
         const $lightboxImg = generateLightboxImg($picture, newUrl);
         expect($lightboxImg.src).toStrictEqual(newUrl);
         expect($lightboxImg).toBeInstanceOf(HTMLImageElement);
-    })
+    });
 });
 
 describe("isValidImage", () => {
@@ -172,7 +179,7 @@ describe("defaultLightboxGenerator", () => {
     it("adds the class from options", () => {
         const $img = document.createElement("img");
         const opts = {
-            class: `class-${Math.floor(Math.random()*1000)}`
+            class: `class-${Math.floor(Math.random() * 1000)}`,
         };
         const $lightbox = defaultLightboxGenerator($img, opts, $img);
 
@@ -182,7 +189,7 @@ describe("defaultLightboxGenerator", () => {
     it("adds loading indicator if we give a highres", () => {
         const $img = document.createElement("img");
         const opts = {
-            highres: "https://google.com"
+            highres: "https://google.com",
         };
         const $lightbox = defaultLightboxGenerator($img, opts, $img);
 
@@ -193,7 +200,7 @@ describe("defaultLightboxGenerator", () => {
     it("adds the base classes to elements", () => {
         const $img = document.createElement("img");
         const opts = {
-            highres: "https://google.com"
+            highres: "https://google.com",
         };
         const $lightbox = defaultLightboxGenerator($img, opts, $img);
         const $loader = $lightbox.querySelector(`.${Classes.LOADER}`);
