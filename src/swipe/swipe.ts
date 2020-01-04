@@ -24,7 +24,7 @@ export interface SwipeOptions {
 
 /** Augments the YAMZ instance to support swiping through albums on mobile */
 export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>(_yamz: YamzType) {
-    const { defaultLightboxGenerator, optsFromElm } = _yamz;
+    const { defaultLightboxGenerator } = _yamz;
     const yamz = _yamz as YamzPlugin<YamzType, Swipeable, SwipeOptions, SwipeOptions>;
 
     yamz.options = {
@@ -85,13 +85,6 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
         return $lightbox;
     };
 
-    // and allow specifying options on the element
-    yamz.optsFromElm = function($elm: HTMLElement) {
-        type outpType = ReturnType<YamzType["optsFromElm"]> & SwipeOptions;
-        const outp: outpType = optsFromElm.call(this, $elm) as outpType;
-        return outp;
-    };
-
     yamz.applySwipeTransform = function(touchOffset: { x: number; y: number }, opts: SwipeOptions) {
         if (!this.active) {
             return;
@@ -125,7 +118,9 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
             `.${Classes.IMG_WRAPPER}`
         ) as HTMLElement | null;
         if ($target) {
-            $target.style.transform = `translateX(${offset.toFixed(5)}px) scale(${scale})`;
+            $target.style.transform = `translateX(${offset.toFixed(5)}px) scale(${scale.toFixed(
+                5
+            )})`;
             $target.style.opacity = `${1 - (1 - scale) * 4}`;
         }
     };
@@ -142,8 +137,8 @@ export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>
         if (this.active) {
             const $btn =
                 direction === "left"
-                    ? this.active.$lightbox.querySelector(".yamz__album__next")
-                    : this.active.$lightbox.querySelector(".yamz__album__prev");
+                    ? this.active.$lightbox.querySelector(`.${Classes.ALBUM_NEXT}`)
+                    : this.active.$lightbox.querySelector(`.${Classes.ALBUM_PREV}`);
             if ($btn) {
                 ($btn as HTMLElement).click();
             }
