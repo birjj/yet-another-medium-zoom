@@ -3,6 +3,8 @@ orbs:
     codecov: codecov/codecov@1.0.5
 jobs:
     build:
+        docker:
+            - image: circleci/node:latest
         steps:
             - run: yarn install
             - run: yarn test
