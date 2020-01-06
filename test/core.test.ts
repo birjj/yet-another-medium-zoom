@@ -156,6 +156,13 @@ describe("MediumLightboxCore", () => {
             expect($preImg).not.toHaveClass(Classes.ORIGINAL_OPEN);
             expect($postImg).toHaveClass(Classes.ORIGINAL_OPEN);
         });
+
+        it("exits early if not open", () => {
+            const inst = createInstance();
+            const $postImg = document.createElement("img");
+            inst.replace($postImg);
+            expect($postImg).not.toHaveClass(Classes.ORIGINAL_OPEN);
+        });
     });
 
     describe("replaceLightboxDOM()", () => {
@@ -172,6 +179,17 @@ describe("MediumLightboxCore", () => {
             inst.replaceLightboxDOM($postBox, $preBox);
             expect($preBox).toEqual($clonedPost);
             expect($preBox).not.toBe($clonedPost);
+        });
+
+        it("exits early if not open", () => {
+            const inst = createInstance();
+            const $postImg = document.createElement("img");
+            $postImg.src = "https://google.dk";
+            const $postBox = inst.defaultLightboxGenerator($postImg, {}, $postImg);
+            const $clonedPost = $postBox.cloneNode(true);
+
+            inst.replaceLightboxDOM($postBox);
+            expect($postBox).toEqual($clonedPost);
         });
     });
 
@@ -311,6 +329,44 @@ describe("MediumLightboxCore", () => {
             const inst = createInstance();
             inst.bind(`.${className}`);
             expect(spy).toHaveBeenCalledWith("click", expect.any(Function));
+        });
+    });
+
+    describe("onScroll()", () => {
+        it("is debounced", () => {
+            const inst = createInstance();
+            inst.onScroll = jest.fn();
+
+            jest.useFakeTimers();
+            inst._onScroll();
+            jest.advanceTimersByTime(10);
+            inst._onScroll();
+            jest.advanceTimersByTime(10);
+            inst._onScroll();
+            jest.runAllTimers();
+
+            expect(inst.onScroll).toHaveBeenCalledTimes(1);
+            jest.useRealTimers();
+        });
+
+        it("exits early if not open", () => {
+            const inst = createInstance();
+            const getter = jest.fn().mockImplementation(() => 0);
+            Object.defineProperty(window, "scrollY", { get: getter });
+            inst.onScroll();
+            expect(getter).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("onKeyDown()", () => {
+        it("exits early if not open", () => {
+            const inst = createInstance();
+            inst.close = jest.fn();
+            dispatchEvent(KeyboardEvent, "keydown", {
+                key: "Escape",
+            });
+
+            expect(inst.close).not.toHaveBeenCalled();
         });
     });
 

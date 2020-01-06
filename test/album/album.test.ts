@@ -196,14 +196,22 @@ describe("withAlbum", () => {
             const inst = createInstance();
             inst.moveToAlbumEntry = jest.fn();
             inst.open(album[1].img, { album });
-            dispatchEvent(KeyboardEvent, "keydown", {
-                key: "ArrowLeft",
-            });
-            dispatchEvent(KeyboardEvent, "keydown", {
-                key: "ArrowRight",
-            });
+            dispatchEvent(KeyboardEvent, "keydown", { key: "ArrowLeft" });
+            dispatchEvent(KeyboardEvent, "keydown", { key: "ArrowRight" });
             expect(inst.moveToAlbumEntry).toHaveBeenCalledWith(album[0], "prev");
             expect(inst.moveToAlbumEntry).toHaveBeenCalledWith(album[2], "next");
+        });
+
+        it("exits early if not open or opened without album", () => {
+            const album = createAlbum();
+            const inst = createInstance();
+            inst.moveToAlbumEntry = jest.fn();
+            const ev = new KeyboardEvent("keydown", { key: "ArrowLeft" });
+            inst.onKeyDown(ev);
+            expect(inst.moveToAlbumEntry).not.toHaveBeenCalled();
+            inst.open(album[1].img);
+            inst.onKeyDown(ev);
+            expect(inst.moveToAlbumEntry).not.toHaveBeenCalled();
         });
     });
 });

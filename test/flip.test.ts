@@ -73,6 +73,16 @@ describe("FLIPElement", () => {
                 )}px) scale(${(2).toFixed(5)}, ${(0.5).toFixed(5)})`
             );
         });
+
+        it("cannot be called before first() and last()", () => {
+            const $elm = document.createElement("div");
+            const flip = new FLIPElement($elm);
+            expect(() => flip.invert()).toThrow();
+            flip.first();
+            expect(() => flip.invert()).toThrow();
+            flip.last();
+            expect(() => flip.invert()).not.toThrow();
+        });
     });
 
     describe("play()", () => {
@@ -95,6 +105,18 @@ describe("FLIPElement", () => {
             jest.advanceTimersByTime(duration + 100);
             expect(promise).resolves.toBeUndefined();
             jest.useRealTimers();
+        });
+
+        it("cannot be called before invert()", () => {
+            const $elm = document.createElement("div");
+            const flip = new FLIPElement($elm);
+            expect(() => flip.play()).toThrow();
+            flip.first();
+            expect(() => flip.play()).toThrow();
+            flip.last();
+            expect(() => flip.play()).toThrow();
+            flip.invert();
+            expect(() => flip.play()).not.toThrow();
         });
     });
 
