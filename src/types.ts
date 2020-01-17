@@ -79,7 +79,7 @@ export type YamzPlugin<
             ) => ReturnType<Yamz["replace"]>;
             bind: (
                 $imgs: Parameters<Yamz["bind"]>[0],
-                opts: Parameters<Yamz["bind"]>[1] & NewImageOpts
+                opts?: Parameters<Yamz["bind"]>[1] & NewImageOpts
             ) => ReturnType<Yamz["bind"]>;
             options: Yamz["options"] & NewGlobalOpts;
         },
