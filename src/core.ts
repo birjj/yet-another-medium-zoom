@@ -79,10 +79,14 @@ export class MediumLightboxCore {
         (options.container || document.body).appendChild(this.active.$lightbox);
         this.active.$lightbox.style.top = `${this.active.scrollPos}px`;
         const $animElm = this.active.$copiedImg.parentElement || this.active.$copiedImg;
+        let $positionElm = $img.nodeName === "PICTURE" ? $img.querySelector("img") : $img;
+        if (!$positionElm) {
+            $positionElm = $img;
+        }
         if (options.duration > 0) {
             this._flip = new FLIPElement($img);
             await this._flip
-                .first($img)
+                .first($positionElm)
                 .last(this.active.$copiedImg)
                 .invert($animElm)
                 .play(options.duration);
@@ -113,9 +117,14 @@ export class MediumLightboxCore {
         const options = active.options;
         this.active.$lightbox.classList.add(Classes.WRAPPER_CLOSING);
         const $animElm = this.active.$copiedImg.parentElement || this.active.$copiedImg;
+        let $positionElm =
+            this.active.$img.nodeName === "PICTURE" ? this.active.$img.querySelector("img") : $img;
+        if (!$positionElm) {
+            $positionElm = this.active.$img;
+        }
         if (options.duration) {
             const flip = new FLIPElement($img);
-            flip.first(this.active.$copiedImg).last(this.active.$img);
+            flip.first(this.active.$copiedImg).last($positionElm);
 
             await flip.invert($animElm).play(options.duration);
         }
