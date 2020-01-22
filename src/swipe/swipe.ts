@@ -26,6 +26,9 @@ export interface SwipeOptions {
 export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>(_yamz: YamzType) {
     const { defaultLightboxGenerator } = _yamz;
     const yamz = _yamz as YamzPlugin<YamzType, Swipeable, SwipeOptions, SwipeOptions>;
+    if (typeof window === "undefined") {
+        return yamz;
+    }
 
     yamz.options = {
         swipeThreshold: window.innerWidth * 0.25,
