@@ -1,7 +1,7 @@
 # Yet Another Medium Zoom
 
 [![codecov](https://codecov.io/gh/birjolaxew/yet-another-medium-zoom/branch/master/graph/badge.svg)](https://codecov.io/gh/birjolaxew/yet-another-medium-zoom)
-[![david](https://david-dm.org/birjolaxew/yet-another-medium-zoom.svg)](https://david-dm.org/birjolaxew/yet-another-medium-zoom)
+![David](https://img.shields.io/david/birjolaxew/yet-another-medium-zoom)
 [![license](https://img.shields.io/npm/l/yet-another-medium-zoom.svg)](./LICENSE)
 
 YAMZ is a lightbox library heavily inspired by [Medium](https://medium.com/).
