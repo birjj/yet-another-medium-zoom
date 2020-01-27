@@ -46,6 +46,13 @@ describe("withSwipe", () => {
         expect(typeof inst.options.swipeResponseLimit).toBe("number");
         expect(inst.options.swipeOnDesktop).toStrictEqual(false);
     });
+    it("does nothing if window isn't available", () => {
+        let _window = window;
+        delete (global as any).window;
+        const inst = createInstance();
+        expect(typeof inst.options.swipeThreshold).toBe("undefined");
+        (global as any).window = _window;
+    });
 
     describe("defaultLightboxGenerator()", () => {
         it("attaches touch listeners", () => {
