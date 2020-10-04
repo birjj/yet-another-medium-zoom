@@ -26,6 +26,7 @@ export interface SwipeOptions {
 export default function withSwipe<YamzType extends ReturnType<typeof withAlbum>>(_yamz: YamzType) {
     const { defaultLightboxGenerator } = _yamz;
     const yamz = _yamz as YamzPlugin<YamzType, Swipeable, SwipeOptions, SwipeOptions>;
+    // tslint:disable-next-line strict-type-predicates
     if (typeof window === "undefined") {
         return yamz;
     }
