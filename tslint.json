@@ -1,3 +1,9 @@
 {
-    "extends": ["tslint-config-standard", "tslint-config-prettier"]
+    "extends": ["tslint-config-standard", "tslint-config-prettier"],
+    "rules": {
+        "no-floating-promises": false,
+        "no-unnecessary-type-assertion": false,
+        "no-unused-expression": false,
+        "jsdoc-format": false
+    }
 }
