@@ -49,14 +49,15 @@
     top: 50%;
     transform: translateY(-50%);
     background-size: cover;
+    color: white;
 }
 .yamz__album__prev::before {
     left: 3em;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M17.219 24a1.565 1.565 0 001.105-2.672L8.997 12l9.327-9.328A1.565 1.565 0 0016.111.459L5.677 10.893a1.565 1.565 0 000 2.213l10.435 10.435a1.56 1.56 0 001.107.459z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M17.219 24a1.565 1.565 0 001.105-2.672L8.997 12l9.327-9.328A1.565 1.565 0 0016.111.459L5.677 10.893a1.565 1.565 0 000 2.213l10.435 10.435a1.56 1.56 0 001.107.459z'/%3E%3C/svg%3E");
 }
 .yamz__album__next::before {
     right: 3em;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M6.783 24a1.565 1.565 0 01-1.106-2.672L15.004 12 5.676 2.671A1.565 1.565 0 017.889.458l10.435 10.435a1.565 1.565 0 010 2.213L7.889 23.541A1.56 1.56 0 016.783 24z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M6.783 24a1.565 1.565 0 01-1.106-2.672L15.004 12 5.676 2.671A1.565 1.565 0 017.889.458l10.435 10.435a1.565 1.565 0 010 2.213L7.889 23.541A1.56 1.56 0 016.783 24z'/%3E%3C/svg%3E");
 }
 
 /* need each animation to have different names (not just use reverse direction) so animationend is called correctly */
