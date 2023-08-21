@@ -5,7 +5,7 @@
   "fixed": [],
   "linked": [["yet-another-medium-zoom", "@yamz/*"]],
   "access": "public",
-  "baseBranch": "v2",
+  "baseBranch": "v1",
   "updateInternalDependencies": "patch",
   "ignore": []
 }

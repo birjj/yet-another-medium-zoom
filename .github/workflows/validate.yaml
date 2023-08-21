@@ -3,7 +3,7 @@ name: CI - Validate
 on:
   push:
     branches:
-      - v2
+      - v1
   pull_request:
   workflow_dispatch:
 
