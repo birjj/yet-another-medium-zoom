@@ -1,0 +1,18 @@
+{
+  "name": "Yet Another Medium Zoom",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": "pnpm install && pnpm run build",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "samverschueren.linter-xo",
+        "EditorConfig.EditorConfig",
+        "github.vscode-github-actions",
+        "yzhang.markdown-all-in-one"
+      ]
+    }
+  }
+}
