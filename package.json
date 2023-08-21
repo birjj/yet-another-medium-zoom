@@ -1,0 +1,24 @@
+{
+  "name": "root",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm -r --stream build",
+    "test": "pnpm lint && pnpm -r --no-bail test-short",
+    "test:lint": "prettier --check . && xo",
+    "test:coverage": "pnpm -r --no-bail --stream coverage",
+    "release": "pnpm release:validate && changeset version && changeset publish",
+    "release:validate": "pnpm i && pnpm build && pnpm test"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.26.2",
+    "prettier": "3.0.2",
+    "xo": "^0.56.0"
+  },
+  "xo": {
+    "space": true,
+    "prettier": true
+  },
+  "packageManager": "pnpm@8.0.0"
+}
