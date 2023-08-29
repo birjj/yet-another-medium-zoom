@@ -36,4 +36,4 @@ jobs:
         run: pnpm test:coverage
 
       - name: Lint source code
-        run: pnpm test:lint
+        run: pnpm lint
