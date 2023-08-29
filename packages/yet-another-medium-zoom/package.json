@@ -1,0 +1,38 @@
+{
+  "name": "yet-another-medium-zoom",
+  "version": "1.0.0",
+  "description": "Configurable, medium-like lightbox with sensible defaults and no dependencies",
+  "keywords": [
+    "lightbox",
+    "image",
+    "image zoom",
+    "picture",
+    "medium"
+  ],
+  "author": "Johan Fagerberg",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/birjj/yet-another-medium-zoom.git",
+    "directory": "packages/yet-another-medium-zoom"
+  },
+  "type": "module",
+  "module": "./dist/index.js",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup ./src/index.ts --format esm,cjs --dts --sourcemap --clean",
+    "watch": "pnpm build --watch src",
+    "test": "vitest run --reporter verbose",
+    "test:short": "vitest run --reporter basic",
+    "test:watch": "vitest --reporter verbose",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {}
+}

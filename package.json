@@ -5,20 +5,23 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm -r --stream build",
-    "test": "pnpm lint && pnpm -r --no-bail test-short",
-    "test:lint": "prettier --check . && xo",
-    "test:coverage": "pnpm -r --no-bail --stream coverage",
+    "lint": "prettier --check . && xo",
+    "lint:fix": "prettier --write . && xo --fix",
+    "test": "pnpm lint && pnpm -r --no-bail test:short",
+    "test:coverage": "pnpm -r --no-bail --stream test:coverage",
     "release": "pnpm release:validate && changeset version && changeset publish",
     "release:validate": "pnpm i && pnpm build && pnpm test"
   },
   "devDependencies": {
     "@changesets/cli": "2.26.2",
     "prettier": "3.0.2",
+    "tsup": "^7.2.0",
     "xo": "^0.56.0"
   },
   "xo": {
     "space": true,
     "prettier": true
   },
-  "packageManager": "pnpm@8.0.0"
+  "packageManager": "pnpm@8.0.0",
+  "dependencies": {}
 }

@@ -1,0 +1,32 @@
+{
+  "name": "@yamz/core",
+  "version": "1.0.0",
+  "description": "Shared functionality for yet-another-medium-zoom",
+  "keywords": [],
+  "author": "Johan Fagerberg",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/birjj/yet-another-medium-zoom.git",
+    "directory": "packages/@yamz/core"
+  },
+  "type": "module",
+  "module": "./dist/index.js",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup ./src/index.ts --format esm,cjs --dts --sourcemap --clean",
+    "watch": "pnpm build --watch src",
+    "test": "vitest run --reporter verbose",
+    "test:short": "vitest run --reporter basic",
+    "test:watch": "vitest --reporter verbose",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {}
+}

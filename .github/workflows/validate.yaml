@@ -14,24 +14,24 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: latest
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: 'pnpm'
-      
+          cache: "pnpm"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Build packages
         run: pnpm build
-      
+
       - name: Run tests with coverage
         run: pnpm test:coverage
 
